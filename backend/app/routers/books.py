@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.book import Book
 from app.schemas.book import BookCreate, BookResponse
+from app.core.dependencies import require_admin
+from app.models.user import User
 
 router = APIRouter(
     prefix="/books",
@@ -12,7 +14,11 @@ router = APIRouter(
 
 
 @router.post("/", response_model=BookResponse)
-def create_book(book: BookCreate, db: Session = Depends(get_db)):
+def create_book(
+    book: BookCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
     existing_book = db.query(Book).filter(Book.code == book.code).first()
 
     if existing_book:
@@ -57,6 +63,7 @@ def update_book(
     book_id: int,
     book_data: BookCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
 ):
     book = db.query(Book).filter(Book.id == book_id).first()
 
@@ -89,7 +96,11 @@ def update_book(
 
 
 @router.delete("/{book_id}")
-def delete_book(book_id: int, db: Session = Depends(get_db)):
+def delete_book(
+    book_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
     book = db.query(Book).filter(Book.id == book_id).first()
 
     if not book:
