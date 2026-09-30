@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'book_detail_page.dart';
 import 'services/book_service.dart';
 
 class CatalogPage extends StatefulWidget {
@@ -208,7 +209,18 @@ class _CatalogPageState extends State<CatalogPage> {
                                             .toString()
                                             .trim();
 
-                                    return Card(
+                                    return InkWell(
+                                      borderRadius: BorderRadius.circular(16),
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (_) => BookDetailPage(
+                                              book: book,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Card(
                                       margin: EdgeInsets.zero,
                                       color: Colors.white,
                                       elevation: 1.5,
@@ -389,6 +401,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                             ),
                                           ),
                                         ],
+                                      ),
                                       ),
                                     );
                                   },
