@@ -1,12 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, require_admin
 from app.database import get_db
 from app.models.book import Book
 from app.models.request import BookRequest
 from app.models.user import User
-from app.schemas.book_request import BookRequestCreate, BookRequestResponse
+from app.schemas.book_request import (
+    BookRequestCreate,
+    BookRequestResponse,
+    PendingBookRequestResponse,
+)
 
 router = APIRouter(
     prefix="/book-requests",
@@ -65,3 +69,36 @@ def create_book_request(
     db.refresh(book_request)
 
     return book_request
+
+
+@router.get(
+    "/pending",
+    response_model=list[PendingBookRequestResponse],
+)
+def get_pending_book_requests(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    requests = (
+        db.query(BookRequest, User, Book)
+        .join(User, BookRequest.user_id == User.id)
+        .join(Book, BookRequest.book_id == Book.id)
+        .filter(BookRequest.status == "PENDING")
+        .order_by(BookRequest.requested_at.asc())
+        .all()
+    )
+
+    return [
+        {
+            "id": book_request.id,
+            "user_id": user.id,
+            "user_name": user.name,
+            "user_email": user.email,
+            "book_id": book.id,
+            "book_title": book.title,
+            "book_code": book.code,
+            "status": book_request.status,
+            "requested_at": book_request.requested_at,
+        }
+        for book_request, user, book in requests
+    ]
