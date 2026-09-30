@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 import 'services/book_request_service.dart';
@@ -18,6 +19,8 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
   final BookRequestService _service = BookRequestService();
 
   List<Map<String, dynamic>> _requests = [];
+  final Set<int> _processingRequestIds = {};
+
   bool _loading = true;
   String? _error;
 
@@ -54,6 +57,185 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
     }
   }
 
+  void _showMessage(String message, {bool isError = false}) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: isError ? Colors.redAccent : Colors.green,
+        ),
+      );
+  }
+
+  Future<void> _approveRequest(Map<String, dynamic> request) async {
+    final requestId = int.tryParse('${request['id']}');
+
+    if (requestId == null ||
+        _processingRequestIds.contains(requestId)) {
+      return;
+    }
+
+    final now = DateTime.now();
+
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime(now.year, now.month, now.day)
+          .add(const Duration(days: 7)),
+      firstDate: DateTime(now.year, now.month, now.day)
+          .add(const Duration(days: 1)),
+      lastDate: DateTime(now.year + 5, now.month, now.day),
+      helpText: 'Selecione a data de devolução',
+      cancelText: 'Cancelar',
+      confirmText: 'Continuar',
+    );
+
+    if (selectedDate == null || !mounted) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Confirmar empréstimo'),
+        content: Text(
+          'Deseja aprovar o empréstimo de '
+          '"${request['book_title'] ?? 'este livro'}"?\n\n'
+          'Data de devolução: '
+          '${_formatDate(selectedDate)}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Aprovar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() {
+      _processingRequestIds.add(requestId);
+    });
+
+    try {
+      final dueDate = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        23,
+        59,
+        0,
+      );
+
+      await _service.approveRequest(
+        token: widget.token,
+        requestId: requestId,
+        dueDate: dueDate,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _requests.removeWhere(
+          (item) => int.tryParse('${item['id']}') == requestId,
+        );
+      });
+
+      _showMessage('Empréstimo aprovado com sucesso!');
+    } catch (e) {
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _processingRequestIds.remove(requestId);
+        });
+      }
+    }
+  }
+
+  Future<void> _rejectRequest(Map<String, dynamic> request) async {
+    final requestId = int.tryParse('${request['id']}');
+
+    if (requestId == null ||
+        _processingRequestIds.contains(requestId)) {
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Rejeitar solicitação'),
+        content: Text(
+          'Deseja realmente rejeitar a solicitação de '
+          '"${request['book_title'] ?? 'este livro'}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+            ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Rejeitar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() {
+      _processingRequestIds.add(requestId);
+    });
+
+    try {
+      await _service.rejectRequest(
+        token: widget.token,
+        requestId: requestId,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _requests.removeWhere(
+          (item) => int.tryParse('${item['id']}') == requestId,
+        );
+      });
+
+      _showMessage('Solicitação rejeitada com sucesso!');
+    } catch (e) {
+      _showMessage(
+        e.toString().replaceFirst('Exception: ', ''),
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _processingRequestIds.remove(requestId);
+        });
+      }
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+
+    return '$day/$month/${date.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,14 +257,12 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
 
   Widget _buildContent() {
     if (_loading) {
-        return ListView(
-            children: const [
-                SizedBox(height: 180),
-                Center(
-                    child: CircularProgressIndicator(),
-                ),
-            ],
-        );
+      return ListView(
+        children: const [
+          SizedBox(height: 180),
+          Center(child: CircularProgressIndicator()),
+        ],
+      );
     }
 
     if (_error != null) {
@@ -139,6 +319,9 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
       separatorBuilder: (_, _) => const SizedBox(height: 14),
       itemBuilder: (context, index) {
         final request = _requests[index];
+        final requestId = int.tryParse('${request['id']}');
+        final processing = requestId != null &&
+            _processingRequestIds.contains(requestId);
 
         return Container(
           padding: const EdgeInsets.all(18),
@@ -188,9 +371,7 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
                         const SizedBox(height: 5),
                         Text(
                           'Código: ${request['book_code'] ?? '-'}',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                          ),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -228,13 +409,45 @@ class _AdminRequestsPageState extends State<AdminRequestsPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Ações administrativas serão adicionadas no próximo passo.',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: processing
+                          ? null
+                          : () => _rejectRequest(request),
+                      icon: const Icon(Icons.close_rounded),
+                      label: const Text('Rejeitar'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: const BorderSide(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: processing
+                          ? null
+                          : () => _approveRequest(request),
+                      icon: processing
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.check_rounded),
+                      label: const Text('Aprovar'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF2457C5),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
