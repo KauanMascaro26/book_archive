@@ -27,3 +27,7 @@ class PendingBookRequestResponse(BaseModel):
     book_code: str
     status: str
     requested_at: datetime
+
+
+class BookRequestApproval(BaseModel):
+    due_date: datetime
