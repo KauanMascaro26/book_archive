@@ -216,6 +216,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                           MaterialPageRoute(
                                             builder: (_) => BookDetailPage(
                                               book: book,
+                                              token: widget.token,
                                             ),
                                           ),
                                         );
