@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
 
+import 'catalog_page.dart';
+
 class HomePage extends StatelessWidget {
   final String userName;
   final String userRole;
+  final String token;
 
   const HomePage({
     super.key,
     required this.userName,
     required this.userRole,
+    required this.token,
   });
+
+  void _openCatalog(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CatalogPage(token: token),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +173,7 @@ class HomePage extends StatelessWidget {
                 ),
 
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () => _openCatalog(context),
                   child: const Text('Ver todos'),
                 ),
               ],
@@ -193,7 +206,7 @@ class HomePage extends StatelessWidget {
               width: double.infinity,
               height: 55,
               child: FilledButton.icon(
-                onPressed: () {},
+                onPressed: () => _openCatalog(context),
                 icon: const Icon(Icons.library_books_rounded),
                 label: const Text(
                   'EXPLORAR CATÁLOGO',
@@ -210,6 +223,11 @@ class HomePage extends StatelessWidget {
       // Navegação inferior
       bottomNavigationBar: NavigationBar(
         selectedIndex: 0,
+        onDestinationSelected: (index) {
+          if (index == 1) {
+            _openCatalog(context);
+          }
+        },
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
