@@ -1,12 +1,58 @@
 import 'package:flutter/material.dart';
 
-class BookDetailPage extends StatelessWidget {
+import 'services/book_request_service.dart';
+
+class BookDetailPage extends StatefulWidget {
   final dynamic book;
+  final String token;
 
   const BookDetailPage({
     super.key,
     required this.book,
+    required this.token,
   });
+
+  @override
+  State<BookDetailPage> createState() => _BookDetailPageState();
+}
+
+class _BookDetailPageState extends State<BookDetailPage> {
+  final BookRequestService requestService = BookRequestService();
+
+  bool sendingRequest = false;
+  bool requestSent = false;
+  String? requestMessage;
+
+  Future<void> _requestBook() async {
+    if (sendingRequest || requestSent) return;
+
+    setState(() {
+      sendingRequest = true;
+      requestMessage = null;
+    });
+
+    try {
+      await requestService.requestBook(
+        token: widget.token,
+        bookId: (widget.book['id'] as num).toInt(),
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        sendingRequest = false;
+        requestSent = true;
+        requestMessage = 'Solicitação enviada! Aguarde a análise do administrador.';
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        sendingRequest = false;
+        requestMessage = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+  }
 
   Widget _metadataItem({
     required IconData icon,
@@ -56,6 +102,7 @@ class BookDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final book = widget.book;
     final title = (book['title'] ?? 'Título desconhecido').toString();
     final author = (book['author'] ?? 'Autor desconhecido').toString();
     final code = (book['code'] ?? '-').toString();
@@ -182,6 +229,55 @@ class BookDetailPage extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 18),
+            if (isAvailable)
+              ElevatedButton.icon(
+                onPressed: sendingRequest || requestSent ? null : _requestBook,
+                icon: sendingRequest
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Icon(requestSent ? Icons.check_rounded : Icons.send_rounded),
+                label: Text(
+                  sendingRequest
+                      ? 'Enviando solicitação...'
+                      : requestSent
+                          ? 'Solicitação enviada'
+                          : 'Solicitar empréstimo',
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF285B9A),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+            if (requestMessage != null) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: requestSent
+                      ? const Color(0xFFE5F6EC)
+                      : const Color(0xFFFFE9E8),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  requestMessage!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: requestSent
+                        ? const Color(0xFF218653)
+                        : const Color(0xFFC43D3D),
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 28),
             const Text(
               'Sobre o livro',
