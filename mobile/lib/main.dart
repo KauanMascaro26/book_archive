@@ -91,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context) => HomePage(
             userName: userName,
             userRole: userRole,
+            token: result['token'] as String,
           ),
         ),
       );

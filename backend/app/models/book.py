@@ -21,6 +21,7 @@ class Book(Base):
     publisher: Mapped[str | None] = mapped_column(String(150))
     year: Mapped[int | None] = mapped_column(Integer)
     category: Mapped[str | None] = mapped_column(String(100))
+    description: Mapped[str | None] = mapped_column(String(500))
     available: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
