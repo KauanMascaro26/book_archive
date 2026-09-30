@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'catalog_page.dart';
+import 'admin_requests_page.dart';
 
 class HomePage extends StatelessWidget {
   final String userName;
@@ -19,6 +20,15 @@ class HomePage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => CatalogPage(token: token),
+      ),
+    );
+  }
+
+  void _openAdminRequests(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AdminRequestsPage(token: token),
       ),
     );
   }
@@ -216,6 +226,24 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
+
+            if (isAdmin) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: OutlinedButton.icon(
+                  onPressed: () => _openAdminRequests(context),
+                  icon: const Icon(Icons.pending_actions_rounded),
+                  label: const Text(
+                    'GERENCIAR SOLICITAÇÕES',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
