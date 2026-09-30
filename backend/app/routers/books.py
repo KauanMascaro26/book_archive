@@ -31,6 +31,7 @@ def create_book(
         code=book.code,
         title=book.title,
         author=book.author,
+        description=book.description,
     )
 
     db.add(new_book)
@@ -88,6 +89,7 @@ def update_book(
     book.code = book_data.code
     book.title = book_data.title
     book.author = book_data.author
+    book.description = book_data.description
 
     db.commit()
     db.refresh(book)
