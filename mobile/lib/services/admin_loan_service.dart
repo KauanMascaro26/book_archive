@@ -43,4 +43,34 @@ class AdminLoanService {
       'Erro ao carregar empréstimos (${response.statusCode}).',
     );
   }
+
+  Future<void> registerReturn({
+    required String token,
+    required int loanId,
+  }) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/loans/$loanId/return'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) return;
+
+    if (response.statusCode == 401) {
+      throw Exception('Sessão expirada. Faça login novamente.');
+    }
+    if (response.statusCode == 403) {
+      throw Exception('Apenas administradores podem registrar devoluções.');
+    }
+    if (response.statusCode == 404) {
+      throw Exception('Empréstimo não encontrado.');
+    }
+    if (response.statusCode == 409) {
+      throw Exception('Este empréstimo já foi devolvido.');
+    }
+
+    throw Exception('Erro ao registrar devolução (${response.statusCode}).');
+  }
 }
