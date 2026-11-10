@@ -7,6 +7,7 @@ import 'loan_history_page.dart';
 import 'admin_books_page.dart';
 import 'admin_loans_page.dart';
 import 'catalog_page.dart';
+import 'categories_page.dart';
 import 'my_loans_page.dart';
 import 'services/loan_service.dart';
 
@@ -556,7 +557,11 @@ class _HomePageState extends State<HomePage> {
       _QuickAccessItem(
         label: 'Categorias',
         icon: Icons.grid_view_rounded,
-        onTap: () => _showComingSoon('Categorias'),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => CategoriesPage(token: widget.token),
+          ),
+        ),
       ),
       _QuickAccessItem(
         label: 'Autores',
