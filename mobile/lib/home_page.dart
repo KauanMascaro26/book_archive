@@ -19,12 +19,14 @@ class HomePage extends StatefulWidget {
   final String userName;
   final String userRole;
   final String token;
+  final VoidCallback onLogout;
 
   const HomePage({
     super.key,
     required this.userName,
     required this.userRole,
     required this.token,
+    required this.onLogout,
   });
 
   @override
@@ -93,7 +95,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _selectTab(int index) {
-    if (index < 0 || index >= (_isAdmin ? 4 : 3)) return;
+    if (index < 0 || index >= (_isAdmin ? 5 : 4)) return;
     FocusScope.of(context).unfocus();
     setState(() => _selectedIndex = index);
     if ((!_isAdmin && index == 2) || (_isAdmin && index == 3)) {
@@ -162,6 +164,7 @@ class _HomePageState extends State<HomePage> {
         AdminLoansPage(token: widget.token),
       ] else
         MyLoansPage(token: widget.token),
+      _buildProfilePage(),
     ];
 
     return Scaffold(
@@ -923,6 +926,175 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildProfilePage() {
+    final roleLabel = _isAdmin ? 'Administrador' : 'Irmão';
+    final initial = widget.userName.trim().isNotEmpty
+        ? widget.userName.trim()[0].toUpperCase()
+        : 'U';
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F4ED),
+      appBar: AppBar(
+        backgroundColor: navy,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Meu perfil',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+            decoration: BoxDecoration(
+              color: navy,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 39,
+                  backgroundColor: gold,
+                  child: Text(
+                    initial,
+                    style: const TextStyle(
+                      color: navy,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 13),
+                Text(
+                  widget.userName,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF294666),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: gold.withValues(alpha: 0.65)),
+                  ),
+                  child: Text(
+                    roleLabel,
+                    style: const TextStyle(
+                      color: gold,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 22),
+          const Text(
+            'Conta',
+            style: TextStyle(
+              color: textNavy,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _profileInfoTile(
+            icon: Icons.person_outline_rounded,
+            label: 'Nome',
+            value: widget.userName,
+          ),
+          const SizedBox(height: 9),
+          _profileInfoTile(
+            icon: Icons.admin_panel_settings_outlined,
+            label: 'Tipo de acesso',
+            value: roleLabel,
+          ),
+          const SizedBox(height: 22),
+          const Text(
+            'Aplicativo',
+            style: TextStyle(
+              color: textNavy,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _profileInfoTile(
+            icon: Icons.menu_book_rounded,
+            label: 'Biblioteca',
+            value: 'BIM – Biblioteca dos Irmãos da Memphis',
+          ),
+          const SizedBox(height: 26),
+          OutlinedButton.icon(
+            onPressed: widget.onLogout,
+            icon: const Icon(Icons.logout_rounded),
+            label: const Text('Sair da conta'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF9B4840),
+              side: const BorderSide(color: Color(0xFFD8B6AF)),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _profileInfoTile({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: cardWhite,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: const Color(0xFFE8E1D4)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: gold, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(color: mutedText, fontSize: 11),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: textNavy,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBottomNavigation() {
     final items = _isAdmin
         ? const [
@@ -930,11 +1102,13 @@ class _HomePageState extends State<HomePage> {
             (Icons.menu_book_outlined, 'Biblioteca'),
             (Icons.pending_actions_outlined, 'Solicitações'),
             (Icons.library_books_outlined, 'Empréstimos'),
+            (Icons.person_outline_rounded, 'Perfil'),
           ]
         : const [
             (Icons.home_outlined, 'Início'),
             (Icons.menu_book_outlined, 'Biblioteca'),
             (Icons.assignment_outlined, 'Empréstimos'),
+            (Icons.person_outline_rounded, 'Perfil'),
           ];
 
     return Container(
