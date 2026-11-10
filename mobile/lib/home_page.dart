@@ -435,7 +435,7 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         color: cardWhite,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 25, 16, 22),
+          padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -579,35 +579,41 @@ class _HomePageState extends State<HomePage> {
       gridDelegate:
           const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisSpacing: 6,
-        crossAxisSpacing: 6,
-        childAspectRatio: 1.32,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 1.12,
       ),
       itemBuilder: (context, index) {
         final item = items[index];
 
         return Material(
-          color: const Color(0xFFFCFBF8),
-          borderRadius: BorderRadius.circular(13),
+          color: cardWhite,
+          borderRadius: BorderRadius.circular(16),
           child: InkWell(
             onTap: item.onTap,
-            borderRadius: BorderRadius.circular(13),
+            borderRadius: BorderRadius.circular(16),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(13),
-                border: Border.all(
-                  color: const Color(0xFFE9E8E4),
-                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.border),
               ),
               padding: const EdgeInsets.symmetric(
-                horizontal: 3,
-                vertical: 7,
+                horizontal: 4,
+                vertical: 10,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(item.icon, color: gold, size: 27),
-                  const SizedBox(height: 5),
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3EBDD),
+                      borderRadius: BorderRadius.circular(13),
+                    ),
+                    child: Icon(item.icon, color: navy, size: 22),
+                  ),
+                  const SizedBox(height: 8),
                   Text(
                     item.label,
                     textAlign: TextAlign.center,
@@ -615,8 +621,8 @@ class _HomePageState extends State<HomePage> {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: textNavy,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
