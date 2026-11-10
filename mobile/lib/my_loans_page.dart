@@ -150,7 +150,12 @@ class _MyLoansPageState extends State<MyLoansPage> {
       );
     }
 
-    if (_loans.isEmpty) {
+    final currentLoans = _loans.where((loan) {
+      final status = (loan['status']?.toString() ?? '').toUpperCase();
+      return status == 'ACTIVE' || status == 'OVERDUE';
+    }).toList();
+
+    if (currentLoans.isEmpty) {
       return ListView(
         padding: const EdgeInsets.all(28),
         children: const [
@@ -176,11 +181,11 @@ class _MyLoansPageState extends State<MyLoansPage> {
       );
     }
 
-    final activeCount = _loans
+    final activeCount = currentLoans
         .where((loan) =>
             (loan['status']?.toString() ?? '').toUpperCase() == 'ACTIVE')
         .length;
-    final overdueCount = _loans
+    final overdueCount = currentLoans
         .where((loan) =>
             (loan['status']?.toString() ?? '').toUpperCase() == 'OVERDUE')
         .length;
@@ -210,7 +215,7 @@ class _MyLoansPageState extends State<MyLoansPage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Acompanhe prazos e situação dos empréstimos.',
+                      'Acompanhe os prazos dos livros que ainda estão com você.',
                       style: TextStyle(color: Color(0xFFD5DCE5), fontSize: 11),
                     ),
                   ],
@@ -223,7 +228,7 @@ class _MyLoansPageState extends State<MyLoansPage> {
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _summary('Total', _loans.length.toString())),
+            Expanded(child: _summary('Em aberto', currentLoans.length.toString())),
             const SizedBox(width: 9),
             Expanded(child: _summary('Em andamento', activeCount.toString())),
             const SizedBox(width: 9),
@@ -231,7 +236,7 @@ class _MyLoansPageState extends State<MyLoansPage> {
           ],
         ),
         const SizedBox(height: 17),
-        for (final loan in _loans) ...[
+        for (final loan in currentLoans) ...[
           _loanCard(loan),
           const SizedBox(height: 12),
         ],
