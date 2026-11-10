@@ -300,7 +300,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                     maxCrossAxisExtent: 220,
                                     crossAxisSpacing: 16,
                                     mainAxisSpacing: 18,
-                                    childAspectRatio: 0.50,
+                                    childAspectRatio: 0.48,
                                   ),
                                   itemCount: filteredBooks.length,
                                   itemBuilder: (context, index) {
