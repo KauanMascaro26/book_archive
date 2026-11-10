@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
+
 import 'services/auth_service.dart';
 
-const Color _bimNavy = Color(0xFF172B4D);
-const Color _bimGold = Color(0xFFC6A15B);
-const Color _bimCream = Color(0xFFF7F4ED);
-const Color _bimField = Color(0xFFFBFAF7);
+const Color _bimNavy = AppTheme.navy;
+const Color _bimGold = AppTheme.gold;
+const Color _bimCream = AppTheme.cream;
+const Color _bimField = AppTheme.field;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
