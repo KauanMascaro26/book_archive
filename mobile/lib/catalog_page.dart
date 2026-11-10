@@ -518,36 +518,6 @@ class _CatalogPageState extends State<CatalogPage> {
   }
 
 
-  Widget _buildInfoTag(IconData icon, String value) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 145),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF4F0E7),
-        borderRadius: BorderRadius.circular(7),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: _muted),
-          const SizedBox(width: 5),
-          Flexible(
-            child: Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: _muted,
-                fontSize: 9,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildFilterButton({
     required BuildContext context,
     required String label,
