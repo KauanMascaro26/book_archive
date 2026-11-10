@@ -209,20 +209,24 @@ class _CatalogPageState extends State<CatalogPage> {
                           Row(
                             children: [
                               Expanded(
-                                child: _buildFilterDropdown(
-                                  hint: 'Categoria',
+                                child: _buildFilterButton(
+                                  context: context,
+                                  label: 'Categoria',
                                   value: selectedCategory,
                                   values: categories,
+                                  icon: Icons.category_outlined,
                                   onChanged: (value) =>
                                       setState(() => selectedCategory = value),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: _buildFilterDropdown(
-                                  hint: 'Autor',
+                                child: _buildFilterButton(
+                                  context: context,
+                                  label: 'Autor',
                                   value: selectedAuthor,
                                   values: authors,
+                                  icon: Icons.person_outline_rounded,
                                   onChanged: (value) =>
                                       setState(() => selectedAuthor = value),
                                 ),
@@ -523,43 +527,210 @@ class _CatalogPageState extends State<CatalogPage> {
   }
 
 
-  Widget _buildFilterDropdown({
-    required String hint,
+  Widget _buildFilterButton({
+    required BuildContext context,
+    required String label,
     required String? value,
     required List<String> values,
+    required IconData icon,
     required ValueChanged<String?> onChanged,
   }) {
-    return Container(
-      height: 42,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: _paper,
-        borderRadius: BorderRadius.circular(11),
-        border: Border.all(color: const Color(0xFFE8E1D4)),
+    final isSelected = value != null;
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => _showFilterPicker(
+        context: context,
+        label: label,
+        value: value,
+        values: values,
+        onChanged: onChanged,
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          hint: Text(hint, style: const TextStyle(color: _muted, fontSize: 11)),
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _gold),
-          style: const TextStyle(color: _navy, fontSize: 11),
-          dropdownColor: _paper,
+      child: Container(
+        height: 44,
+        padding: const EdgeInsets.symmetric(horizontal: 11),
+        decoration: BoxDecoration(
+          color: isSelected ? _gold.withValues(alpha: 0.16) : _paper,
           borderRadius: BorderRadius.circular(12),
-          items: [
-            DropdownMenuItem<String>(
-              value: null,
-              child: Text('Todas $hint'.toLowerCase()),
+          border: Border.all(
+            color: isSelected ? _gold : const Color(0xFFE8E1D4),
+            width: isSelected ? 1.4 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: isSelected ? _gold : _muted, size: 17),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Text(
+                value ?? label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: isSelected ? _navy : _muted,
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
             ),
-            ...values.map((item) => DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item, maxLines: 1, overflow: TextOverflow.ellipsis),
-                )),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: isSelected ? _gold : _muted,
+              size: 19,
+            ),
           ],
-          onChanged: onChanged,
         ),
       ),
     );
+  }
+
+  Future<void> _showFilterPicker({
+    required BuildContext context,
+    required String label,
+    required String? value,
+    required List<String> values,
+    required ValueChanged<String?> onChanged,
+  }) async {
+    final controller = TextEditingController();
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _paper,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            final query = controller.text.trim().toLowerCase();
+            final filteredValues = values
+                .where((item) => item.toLowerCase().contains(query))
+                .toList();
+
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  12,
+                  20,
+                  16 + MediaQuery.of(sheetContext).viewInsets.bottom,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 38,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD9D2C6),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Filtrar por $label',
+                            style: const TextStyle(
+                              color: _navy,
+                              fontSize: 19,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(sheetContext),
+                          icon: const Icon(Icons.close_rounded, color: _muted),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Escolha uma opção para refinar o acervo.',
+                      style: const TextStyle(color: _muted, fontSize: 12),
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: controller,
+                      onChanged: (_) => setSheetState(() {}),
+                      decoration: InputDecoration(
+                        hintText: 'Buscar $label'.toLowerCase(),
+                        prefixIcon: const Icon(Icons.search_rounded, color: _gold),
+                        filled: true,
+                        fillColor: _cream,
+                        isDense: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(13),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Flexible(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: [
+                          ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                            leading: Container(
+                              width: 34,
+                              height: 34,
+                              decoration: BoxDecoration(
+                                color: _cream,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(Icons.grid_view_rounded, color: _navy, size: 18),
+                            ),
+                            title: Text('Todas as opções', style: const TextStyle(color: _navy, fontWeight: FontWeight.w600)),
+                            trailing: value == null
+                                ? const Icon(Icons.check_circle_rounded, color: _gold)
+                                : null,
+                            onTap: () => Navigator.pop(sheetContext, ''),
+                          ),
+                          const Divider(height: 8, color: Color(0xFFEDE7DC)),
+                          ...filteredValues.map((item) {
+                            final selected = value?.toLowerCase() == item.toLowerCase();
+                            return ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              title: Text(
+                                item,
+                                style: TextStyle(
+                                  color: _navy,
+                                  fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+                                ),
+                              ),
+                              trailing: selected
+                                  ? const Icon(Icons.check_circle_rounded, color: _gold)
+                                  : const Icon(Icons.circle_outlined, color: Color(0xFFD5CFC4), size: 20),
+                              onTap: () => Navigator.pop(sheetContext, item),
+                            );
+                          }),
+                          if (filteredValues.isEmpty)
+                            const Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Text(
+                                'Nenhuma opção encontrada.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: _muted),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+    controller.dispose();
+    if (result != null) onChanged(result.isEmpty ? null : result);
   }
 
   Widget _buildMessage({
