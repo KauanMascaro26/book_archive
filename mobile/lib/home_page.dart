@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'admin_requests_page.dart';
+import 'favorites_page.dart';
 import 'admin_books_page.dart';
 import 'admin_loans_page.dart';
 import 'catalog_page.dart';
@@ -522,7 +523,11 @@ class _HomePageState extends State<HomePage> {
       _QuickAccessItem(
         label: 'Favoritos',
         icon: Icons.favorite_border_rounded,
-        onTap: () => _showComingSoon('Favoritos'),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => FavoritesPage(token: widget.token),
+          ),
+        ),
       ),
       _QuickAccessItem(
         label: 'Empréstimos',
