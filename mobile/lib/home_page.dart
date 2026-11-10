@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
+
 import 'admin_requests_page.dart';
 import 'favorites_page.dart';
 import 'loan_history_page.dart';
@@ -11,13 +13,13 @@ import 'categories_page.dart';
 import 'my_loans_page.dart';
 import 'services/loan_service.dart';
 
-const Color navy = Color(0xFF071D35);
-const Color navyLight = Color(0xFF102D50);
-const Color gold = Color(0xFFE5AF35);
-const Color pageBackground = Color(0xFFF2F4F7);
-const Color cardWhite = Color(0xFFFFFEFC);
-const Color textNavy = Color(0xFF172B45);
-const Color mutedText = Color(0xFF718096);
+const Color navy = AppTheme.navy;
+const Color navyLight = AppTheme.navyLight;
+const Color gold = AppTheme.gold;
+const Color pageBackground = AppTheme.cream;
+const Color cardWhite = AppTheme.paper;
+const Color textNavy = AppTheme.text;
+const Color mutedText = AppTheme.muted;
 
 class HomePage extends StatefulWidget {
   final String userName;
