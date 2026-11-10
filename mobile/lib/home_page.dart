@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'admin_requests_page.dart';
+import 'admin_loans_page.dart';
 import 'catalog_page.dart';
 import 'my_loans_page.dart';
 import 'services/loan_service.dart';
@@ -36,6 +37,7 @@ class _HomePageState extends State<HomePage> {
       TextEditingController();
 
   List<Map<String, dynamic>> _loans = [];
+  int _selectedIndex = 0;
   bool _loadingLoans = true;
   String? _loanError;
 
@@ -90,34 +92,20 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _openCatalog() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => CatalogPage(token: widget.token),
-      ),
-    );
+  void _selectTab(int index) {
+    if (index < 0 || index >= (_isAdmin ? 4 : 3)) return;
+    FocusScope.of(context).unfocus();
+    setState(() => _selectedIndex = index);
+    if ((!_isAdmin && index == 2) || (_isAdmin && index == 3)) {
+      _loadLoans();
+    }
   }
 
-  void _openMyLoans() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MyLoansPage(token: widget.token),
-      ),
-    ).then((_) {
-      if (mounted) _loadLoans();
-    });
-  }
+  void _openCatalog() => _selectTab(1);
 
-  void _openAdminRequests() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AdminRequestsPage(token: widget.token),
-      ),
-    );
-  }
+  void _openMyLoans() => _selectTab(_isAdmin ? 3 : 2);
+
+  void _openAdminRequests() => _selectTab(2);
 
   void _showComingSoon(String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -166,6 +154,27 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = <Widget>[
+      _buildDashboard(),
+      CatalogPage(token: widget.token),
+      if (_isAdmin) ...[
+        AdminRequestsPage(token: widget.token),
+        AdminLoansPage(token: widget.token),
+      ] else
+        MyLoansPage(token: widget.token),
+    ];
+
+    return Scaffold(
+      backgroundColor: cardWhite,
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: pages,
+      ),
+      bottomNavigationBar: _buildBottomNavigation(),
+    );
+  }
+
+  Widget _buildDashboard() {
     return Scaffold(
       backgroundColor: navy,
       body: RefreshIndicator(
@@ -186,7 +195,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigation(),
     );
   }
 
@@ -916,6 +924,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBottomNavigation() {
+    final items = _isAdmin
+        ? const [
+            (Icons.home_outlined, 'Início'),
+            (Icons.menu_book_outlined, 'Biblioteca'),
+            (Icons.pending_actions_outlined, 'Solicitações'),
+            (Icons.library_books_outlined, 'Empréstimos'),
+          ]
+        : const [
+            (Icons.home_outlined, 'Início'),
+            (Icons.menu_book_outlined, 'Biblioteca'),
+            (Icons.assignment_outlined, 'Empréstimos'),
+          ];
+
     return Container(
       decoration: const BoxDecoration(
         color: navy,
@@ -929,27 +950,13 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           child: Row(
             children: [
-              _BottomItem(
-                icon: Icons.home_outlined,
-                label: 'Início',
-                selected: true,
-                onTap: () {},
-              ),
-              _BottomItem(
-                icon: Icons.menu_book_outlined,
-                label: 'Biblioteca',
-                onTap: _openCatalog,
-              ),
-              _BottomItem(
-                icon: Icons.search_rounded,
-                label: 'Pesquisar',
-                onTap: _openCatalog,
-              ),
-              _BottomItem(
-                icon: Icons.person_outline_rounded,
-                label: 'Perfil',
-                onTap: () => _showComingSoon('Perfil'),
-              ),
+              for (var index = 0; index < items.length; index++)
+                _BottomItem(
+                  icon: items[index].$1,
+                  label: items[index].$2,
+                  selected: _selectedIndex == index,
+                  onTap: () => _selectTab(index),
+                ),
             ],
           ),
         ),
