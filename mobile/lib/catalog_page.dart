@@ -296,10 +296,10 @@ class _CatalogPageState extends State<CatalogPage> {
                                   padding: const EdgeInsets.fromLTRB(
                                       16, 0, 16, 24),
                                   gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 12,
-                                    mainAxisSpacing: 14,
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 220,
+                                    crossAxisSpacing: 16,
+                                    mainAxisSpacing: 18,
                                     childAspectRatio: 0.62,
                                   ),
                                   itemCount: filteredBooks.length,
