@@ -315,10 +315,10 @@ class _CatalogPageState extends State<CatalogPage> {
                                         .toString();
                                     final code =
                                         (book['code'] ?? '-').toString();
-                                    final description =
-                                        (book['description'] ?? '')
-                                            .toString()
-                                            .trim();
+                                    final category =
+                                        (book['category'] ?? '').toString().trim();
+                                    final year =
+                                        (book['year'] ?? '').toString().trim();
 
                                     return Material(
                                       color: _paper,
@@ -496,30 +496,23 @@ class _CatalogPageState extends State<CatalogPage> {
                                                       ),
                                                       const SizedBox(height: 8),
                                                       Expanded(
-                                                        child: Container(
-                                                          width: double.infinity,
-                                                          padding: const EdgeInsets.symmetric(
-                                                            horizontal: 8,
-                                                            vertical: 7,
-                                                          ),
-                                                          decoration: BoxDecoration(
-                                                            color: const Color(0xFFF8F6F0),
-                                                            borderRadius: BorderRadius.circular(8),
-                                                          ),
-                                                          child: Align(
-                                                            alignment: Alignment.topLeft,
-                                                            child: Text(
-                                                              description.isEmpty
-                                                                  ? 'Descrição ainda não cadastrada.'
-                                                                  : description,
-                                                              maxLines: 3,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              style: const TextStyle(
-                                                                color: _muted,
-                                                                fontSize: 10,
-                                                                height: 1.3,
-                                                              ),
-                                                            ),
+                                                        child: Align(
+                                                          alignment: Alignment.centerLeft,
+                                                          child: Wrap(
+                                                            spacing: 6,
+                                                            runSpacing: 6,
+                                                            children: [
+                                                              if (category.isNotEmpty)
+                                                                _buildInfoTag(
+                                                                  Icons.category_outlined,
+                                                                  category,
+                                                                ),
+                                                              if (year.isNotEmpty)
+                                                                _buildInfoTag(
+                                                                  Icons.calendar_today_outlined,
+                                                                  year,
+                                                                ),
+                                                            ],
                                                           ),
                                                         ),
                                                       ),
@@ -552,6 +545,36 @@ class _CatalogPageState extends State<CatalogPage> {
     );
   }
 
+
+  Widget _buildInfoTag(IconData icon, String value) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 145),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF4F0E7),
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: _muted),
+          const SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: _muted,
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildFilterButton({
     required BuildContext context,
