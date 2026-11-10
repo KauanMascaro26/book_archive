@@ -97,8 +97,9 @@ class _AdminLoansPageState extends State<AdminLoansPage> {
     final query = _searchController.text.trim().toLowerCase();
     return _loans.where((loan) {
       final status = (loan['status'] ?? '').toString().toUpperCase();
-      final matchesStatus =
-          _selectedStatus == 'ALL' || status == _selectedStatus;
+      final isCurrent = status == 'ACTIVE' || status == 'OVERDUE';
+      final matchesStatus = isCurrent &&
+          (_selectedStatus == 'ALL' || status == _selectedStatus);
       if (!matchesStatus) return false;
       if (query.isEmpty) return true;
       final userName = (loan['user_name'] ?? '').toString().toLowerCase();
@@ -201,7 +202,7 @@ class _AdminLoansPageState extends State<AdminLoansPage> {
                             fontSize: 17,
                             fontWeight: FontWeight.w800)),
                     SizedBox(height: 4),
-                    Text('Consulte os empréstimos e acompanhe as devoluções.',
+                    Text('Acompanhe os empréstimos em andamento e os atrasos.',
                         style: TextStyle(
                             color: Color(0xFFD5DCE5), fontSize: 11)),
                   ],
@@ -214,7 +215,7 @@ class _AdminLoansPageState extends State<AdminLoansPage> {
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _summary('Total', _loans.length.toString())),
+            Expanded(child: _summary('Em aberto', (active + overdue).toString())),
             const SizedBox(width: 8),
             Expanded(child: _summary('Ativos', active.toString())),
             const SizedBox(width: 8),
@@ -265,8 +266,6 @@ class _AdminLoansPageState extends State<AdminLoansPage> {
               const SizedBox(width: 7),
               _buildFilterChip('Em andamento', 'ACTIVE'),
               const SizedBox(width: 7),
-              _buildFilterChip('Devolvidos', 'RETURNED'),
-              const SizedBox(width: 7),
               _buildFilterChip('Atrasados', 'OVERDUE'),
             ],
           ),
@@ -274,7 +273,7 @@ class _AdminLoansPageState extends State<AdminLoansPage> {
         const SizedBox(height: 15),
         Row(
           children: [
-            const Text('Registros',
+            const Text('Empréstimos em aberto',
                 style: TextStyle(
                     color: _navy, fontSize: 16, fontWeight: FontWeight.w800)),
             const Spacer(),
