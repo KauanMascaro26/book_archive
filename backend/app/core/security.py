@@ -1,10 +1,11 @@
+import os
 from datetime import datetime, timedelta, timezone
 
 import jwt
 from pwdlib import PasswordHash
 
 
-SECRET_KEY = "book_archive_secret_key"
+SECRET_KEY = os.getenv("SECRET_KEY", "local-development-key-change-before-deploy")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
