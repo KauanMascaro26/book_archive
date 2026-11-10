@@ -214,9 +214,13 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 width: 190,
                 height: 260,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0E9DA),
-                  borderRadius: BorderRadius.circular(13),
-                  border: Border.all(color: const Color(0xFFE1D5BF)),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFF4EEDF), Color(0xFFE8DFC9)],
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppTheme.border),
                   boxShadow: [
                     BoxShadow(
                       color: _navy.withValues(alpha: 0.13),
@@ -230,7 +234,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     const Center(
                       child: Icon(
                         Icons.menu_book_rounded,
-                        size: 78,
+                        size: 84,
                         color: _navy,
                       ),
                     ),
@@ -262,7 +266,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       left: 12,
                       right: 12,
                       child: Text(
-                        'CAPA EM BREVE',
+                        'BIBLIOTECA BIM',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: _navy.withValues(alpha: 0.6),
