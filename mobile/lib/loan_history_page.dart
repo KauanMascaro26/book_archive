@@ -46,7 +46,7 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
     final parsed = DateTime.tryParse(value.toString());
     if (parsed == null) return 'Não registrado';
     final date = parsed.toLocal();
-    return '\${date.day.toString().padLeft(2, '0')}/\${date.month.toString().padLeft(2, '0')}/\${date.year}';
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
   String _statusLabel(String status) {
@@ -184,7 +184,7 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
             Text((loan['book_title'] ?? 'Livro sem título').toString(), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: _navy, fontSize: 13, fontWeight: FontWeight.w800)),
             const SizedBox(height: 3),
             Text((loan['book_author'] ?? 'Autor não informado').toString(), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: _muted, fontSize: 11)),
-            Text('Código: \${loan['book_code'] ?? '-'}', style: const TextStyle(color: _muted, fontSize: 10)),
+            Text('Código: ${loan['book_code'] ?? '-'}', style: const TextStyle(color: _muted, fontSize: 10)),
           ])),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
