@@ -51,7 +51,7 @@ class AuthService {
       'user': user,
     };
   }
-}
+
   Future<Map<String, dynamic>> register({
     required String name,
     required String email,
@@ -98,3 +98,4 @@ class AuthService {
 
     throw Exception('Não foi possível realizar o cadastro.');
   }
+}
