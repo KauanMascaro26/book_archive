@@ -8,6 +8,7 @@ const Color bimNavy = Color(0xFF172B4D);
 const Color bimGold = Color(0xFFC6A15B);
 const Color bimCream = Color(0xFFF7F4ED);
 const Color bimField = Color(0xFFFBFAF7);
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(const BookArchiveApp());
@@ -19,6 +20,7 @@ class BookArchiveApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: appNavigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'BIM - Biblioteca dos Irmãos da Memphis',
       theme: ThemeData(
@@ -87,6 +89,12 @@ class _LoginPageState extends State<LoginPage> {
             userName: userName,
             userRole: userRole,
             token: result['token'] as String,
+            onLogout: () {
+              appNavigatorKey.currentState?.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+            },
           ),
         ),
       );
