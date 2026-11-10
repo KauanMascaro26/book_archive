@@ -300,7 +300,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                     maxCrossAxisExtent: 220,
                                     crossAxisSpacing: 16,
                                     mainAxisSpacing: 18,
-                                    childAspectRatio: 0.62,
+                                    childAspectRatio: 0.66,
                                   ),
                                   itemCount: filteredBooks.length,
                                   itemBuilder: (context, index) {
@@ -322,7 +322,7 @@ class _CatalogPageState extends State<CatalogPage> {
 
                                     return Material(
                                       color: _paper,
-                                      borderRadius: BorderRadius.circular(15),
+                                      borderRadius: BorderRadius.circular(18),
                                       clipBehavior: Clip.antiAlias,
                                       child: InkWell(
                                         onTap: () {
@@ -340,7 +340,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                             borderRadius:
                                                 BorderRadius.circular(15),
                                             border: Border.all(
-                                              color: const Color(0xFFE8E1D4),
+                                              color: AppTheme.border,
                                             ),
                                           ),
                                           child: Column(
@@ -350,14 +350,32 @@ class _CatalogPageState extends State<CatalogPage> {
                                               Expanded(
                                                 flex: 5,
                                                 child: Container(
-                                                  color: const Color(0xFFF0E9DA),
+                                                  decoration: const BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      begin: Alignment.topLeft,
+                                                      end: Alignment.bottomRight,
+                                                      colors: [
+                                                        Color(0xFFF4EEDF),
+                                                        Color(0xFFE8DFC9),
+                                                      ],
+                                                    ),
+                                                  ),
                                                   child: Stack(
                                                     children: [
+                                                      Positioned(
+                                                        right: -18,
+                                                        top: -22,
+                                                        child: Icon(
+                                                          Icons.auto_stories_rounded,
+                                                          color: _navy.withValues(alpha: 0.06),
+                                                          size: 118,
+                                                        ),
+                                                      ),
                                                       const Center(
                                                         child: Icon(
                                                           Icons.menu_book_rounded,
                                                           color: _navy,
-                                                          size: 54,
+                                                          size: 58,
                                                         ),
                                                       ),
                                                       Positioned(
@@ -391,21 +409,50 @@ class _CatalogPageState extends State<CatalogPage> {
                                                         ),
                                                       ),
                                                       Positioned(
-                                                        bottom: 9,
+                                                        top: 9,
+                                                        right: 9,
+                                                        child: Container(
+                                                          padding: const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 5,
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            color: _paper.withValues(alpha: 0.92),
+                                                            borderRadius: BorderRadius.circular(20),
+                                                          ),
+                                                          child: Row(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              Icon(
+                                                                available ? Icons.check_circle_rounded : Icons.lock_outline_rounded,
+                                                                size: 11,
+                                                                color: available ? AppTheme.success : AppTheme.danger,
+                                                              ),
+                                                              const SizedBox(width: 4),
+                                                              Text(
+                                                                available ? 'Disponível' : 'Indisponível',
+                                                                style: TextStyle(
+                                                                  color: available ? AppTheme.success : AppTheme.danger,
+                                                                  fontSize: 9,
+                                                                  fontWeight: FontWeight.w800,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        bottom: 10,
                                                         left: 0,
                                                         right: 0,
                                                         child: Text(
-                                                          'CAPA EM BREVE',
-                                                          textAlign:
-                                                              TextAlign.center,
+                                                          'BIBLIOTECA BIM',
+                                                          textAlign: TextAlign.center,
                                                           style: TextStyle(
-                                                            color: _navy
-                                                                .withValues(
-                                                                    alpha: 0.58),
+                                                            color: _navy.withValues(alpha: 0.48),
                                                             fontSize: 8,
-                                                            letterSpacing: 1.2,
-                                                            fontWeight:
-                                                                FontWeight.w700,
+                                                            letterSpacing: 1.6,
+                                                            fontWeight: FontWeight.w800,
                                                           ),
                                                         ),
                                                       ),
@@ -430,8 +477,8 @@ class _CatalogPageState extends State<CatalogPage> {
                                                             .ellipsis,
                                                         style: const TextStyle(
                                                           color: _navy,
-                                                          fontSize: 13,
-                                                          height: 1.15,
+                                                          fontSize: 13.5,
+                                                          height: 1.2,
                                                           fontWeight:
                                                               FontWeight.w800,
                                                         ),
@@ -453,56 +500,21 @@ class _CatalogPageState extends State<CatalogPage> {
                                                           description.isEmpty
                                                               ? 'Descrição ainda não cadastrada.'
                                                               : description,
-                                                          maxLines: 3,
+                                                          maxLines: 2,
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style:
                                                               const TextStyle(
                                                             color: _muted,
                                                             fontSize: 10,
-                                                            height: 1.3,
+                                                            height: 1.35,
                                                           ),
                                                         ),
                                                       ),
-                                                      Container(
-                                                        width: double.infinity,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                          vertical: 6,
-                                                        ),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: available
-                                                              ? const Color(
-                                                                  0xFFEAF2EA)
-                                                              : const Color(
-                                                                  0xFFF8E9E5),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(7),
-                                                        ),
-                                                        child: Text(
-                                                          available
-                                                              ? 'Disponível'
-                                                              : 'Indisponível',
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: TextStyle(
-                                                            color: available
-                                                                ? const Color(
-                                                                    0xFF356B48)
-                                                                : const Color(
-                                                                    0xFF9B4840),
-                                                            fontSize: 10,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(height: 5),
+
+                                                      const SizedBox(height: 8),
                                                       Text(
-                                                        code,
+                                                        'CÓD. $code',
                                                         maxLines: 1,
                                                         overflow: TextOverflow
                                                             .ellipsis,
