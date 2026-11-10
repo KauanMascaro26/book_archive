@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.database import get_db
 from app.models.book import Book
+from app.models.loan import Loan
+from app.models.request import BookRequest
 from app.schemas.book import BookCreate, BookResponse
 from app.core.dependencies import require_admin
 from app.models.user import User
@@ -117,8 +120,38 @@ def delete_book(
             detail="Book not found",
         )
 
-    db.delete(book)
-    db.commit()
+    linked_requests = (
+        db.query(BookRequest)
+        .filter(BookRequest.book_id == book_id)
+        .count()
+    )
+    linked_loans = (
+        db.query(Loan)
+        .filter(Loan.book_id == book_id)
+        .count()
+    )
+
+    if linked_requests or linked_loans:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Este livro possui histórico de solicitações ou empréstimos "
+                "e não pode ser excluído para preservar os registros da biblioteca."
+            ),
+        )
+
+    try:
+        db.delete(book)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Não foi possível excluir este livro porque existem registros "
+                "vinculados a ele."
+            ),
+        )
 
     return {
         "message": "Book deleted successfully"
