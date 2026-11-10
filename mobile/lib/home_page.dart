@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
 
   List<Map<String, dynamic>> _loans = [];
   int _selectedIndex = 0;
+  int _catalogVersion = 0;
   bool _loadingLoans = true;
   String? _loanError;
 
@@ -106,9 +107,11 @@ class _HomePageState extends State<HomePage> {
 
   void _openCatalog() => _selectTab(1);
 
+  void _refreshCatalog() => setState(() => _catalogVersion++);
+
   void _openMyLoans() => _selectTab(_isAdmin ? 4 : 2);
 
-  void _openAdminRequests() => _selectTab(2);
+  void _openAdminRequests() => _selectTab(3);
 
   void _showComingSoon(String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -159,9 +162,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final pages = <Widget>[
       _buildDashboard(),
-      CatalogPage(token: widget.token),
+      CatalogPage(key: ValueKey(_catalogVersion), token: widget.token),
       if (_isAdmin) ...[
-        AdminBooksPage(token: widget.token),
+        AdminBooksPage(token: widget.token, onBooksChanged: _refreshCatalog),
         AdminRequestsPage(token: widget.token),
         AdminLoansPage(token: widget.token),
       ] else
