@@ -272,7 +272,7 @@ class _AdminBooksPageState extends State<AdminBooksPage> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
       itemCount: filtered.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 9),
+      separatorBuilder: (_, _) => const SizedBox(height: 9),
       itemBuilder: (context, index) {
         final book = filtered[index];
         final isAvailable = book['available'] == true;
