@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'services/book_request_service.dart';
 
+const _navy = Color(0xFF172B4D);
+const _gold = Color(0xFFC6A15B);
+const _cream = Color(0xFFF7F4ED);
+const _paper = Color(0xFFFFFEFC);
+const _muted = Color(0xFF727B88);
+
 class BookDetailPage extends StatefulWidget {
   final dynamic book;
   final String token;
@@ -38,15 +44,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
       );
 
       if (!mounted) return;
-
       setState(() {
         sendingRequest = false;
         requestSent = true;
-        requestMessage = 'Solicitação enviada! Aguarde a análise do administrador.';
+        requestMessage =
+            'Solicitação enviada! Aguarde a análise do administrador.';
       });
     } catch (e) {
       if (!mounted) return;
-
       setState(() {
         sendingRequest = false;
         requestMessage = e.toString().replaceFirst('Exception: ', '');
@@ -62,34 +67,39 @@ class _BookDetailPageState extends State<BookDetailPage> {
     if (value.trim().isEmpty) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5FA),
+        color: _paper,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE8E1D4)),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: const Color(0xFF4979B8)),
-          const SizedBox(width: 10),
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0E9DA),
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Icon(icon, color: _navy, size: 20),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.blueGrey,
-                  ),
+                  style: const TextStyle(color: _muted, fontSize: 11),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   value,
                   style: const TextStyle(
+                    color: _navy,
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF202B3C),
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -113,31 +123,34 @@ class _BookDetailPageState extends State<BookDetailPage> {
     final isAvailable = book['available'] == true;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
+      backgroundColor: _cream,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F7FB),
+        backgroundColor: _navy,
+        foregroundColor: Colors.white,
+        elevation: 0,
         title: const Text(
           'Detalhes do livro',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+        padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
               child: Container(
                 width: 190,
-                height: 270,
+                height: 260,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE1ECFA),
-                  borderRadius: BorderRadius.circular(16),
+                  color: const Color(0xFFF0E9DA),
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(color: const Color(0xFFE1D5BF)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: _navy.withValues(alpha: 0.13),
                       blurRadius: 18,
-                      offset: const Offset(0, 8),
+                      offset: const Offset(0, 9),
                     ),
                   ],
                 ),
@@ -146,21 +159,44 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     const Center(
                       child: Icon(
                         Icons.menu_book_rounded,
-                        size: 76,
-                        color: Color(0xFF7CA7D9),
+                        size: 78,
+                        color: _navy,
                       ),
                     ),
                     Positioned(
+                      top: 13,
+                      left: 13,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _navy,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Text(
+                          'BIM',
+                          style: TextStyle(
+                            color: _gold,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1.5,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 18,
                       left: 12,
                       right: 12,
-                      bottom: 18,
                       child: Text(
                         'CAPA EM BREVE',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.blueGrey.shade600,
+                          color: _navy.withValues(alpha: 0.6),
                           fontSize: 10,
-                          letterSpacing: 1.4,
+                          letterSpacing: 1.5,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -169,27 +205,24 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 25),
             Text(
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
+                color: _navy,
                 fontSize: 24,
                 height: 1.2,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF202B3C),
+                fontWeight: FontWeight.w800,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 7),
             Text(
               author,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.blueGrey,
-              ),
+              style: const TextStyle(color: _muted, fontSize: 15),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 17),
             Center(
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -198,9 +231,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
                 decoration: BoxDecoration(
                   color: isAvailable
-                      ? const Color(0xFFE5F6EC)
-                      : const Color(0xFFFFE9E8),
-                  borderRadius: BorderRadius.circular(24),
+                      ? const Color(0xFFEAF2EA)
+                      : const Color(0xFFF8E9E5),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: isAvailable
+                        ? const Color(0xFFC9DCCB)
+                        : const Color(0xFFEBD0CA),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -208,113 +246,124 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     Icon(
                       isAvailable
                           ? Icons.check_circle_rounded
-                          : Icons.cancel_rounded,
+                          : Icons.lock_outline_rounded,
                       size: 17,
                       color: isAvailable
-                          ? const Color(0xFF218653)
-                          : const Color(0xFFC43D3D),
+                          ? const Color(0xFF356B48)
+                          : const Color(0xFF9B4840),
                     ),
                     const SizedBox(width: 7),
                     Text(
                       isAvailable ? 'Disponível para empréstimo' : 'Indisponível',
                       style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
                         color: isAvailable
-                            ? const Color(0xFF218653)
-                            : const Color(0xFFC43D3D),
+                            ? const Color(0xFF356B48)
+                            : const Color(0xFF9B4840),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 18),
-            if (isAvailable)
-              ElevatedButton.icon(
-                onPressed: sendingRequest || requestSent ? null : _requestBook,
-                icon: sendingRequest
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Icon(requestSent ? Icons.check_rounded : Icons.send_rounded),
-                label: Text(
-                  sendingRequest
-                      ? 'Enviando solicitação...'
-                      : requestSent
-                          ? 'Solicitação enviada'
-                          : 'Solicitar empréstimo',
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF285B9A),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+            if (isAvailable) ...[
+              const SizedBox(height: 18),
+              SizedBox(
+                height: 50,
+                child: FilledButton.icon(
+                  onPressed:
+                      sendingRequest || requestSent ? null : _requestBook,
+                  icon: sendingRequest
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: _navy,
+                          ),
+                        )
+                      : Icon(
+                          requestSent
+                              ? Icons.check_rounded
+                              : Icons.menu_book_rounded,
+                        ),
+                  label: Text(
+                    sendingRequest
+                        ? 'Enviando solicitação...'
+                        : requestSent
+                            ? 'Solicitação enviada'
+                            : 'Solicitar empréstimo',
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _gold,
+                    foregroundColor: _navy,
+                    disabledBackgroundColor: const Color(0xFFE5D9C2),
+                    disabledForegroundColor: _navy,
+                    textStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
+            ],
             if (requestMessage != null) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 11),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
                   color: requestSent
-                      ? const Color(0xFFE5F6EC)
-                      : const Color(0xFFFFE9E8),
-                  borderRadius: BorderRadius.circular(12),
+                      ? const Color(0xFFEAF2EA)
+                      : const Color(0xFFF8E9E5),
+                  borderRadius: BorderRadius.circular(11),
                 ),
                 child: Text(
                   requestMessage!,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: requestSent
-                        ? const Color(0xFF218653)
-                        : const Color(0xFFC43D3D),
-                    fontSize: 13,
+                        ? const Color(0xFF356B48)
+                        : const Color(0xFF9B4840),
+                    fontSize: 12,
                   ),
                 ),
               ),
             ],
             const SizedBox(height: 28),
-            const Text(
-              'Sobre o livro',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF202B3C),
+            _sectionTitle('Sobre o livro'),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: _paper,
+                borderRadius: BorderRadius.circular(13),
+                border: Border.all(color: const Color(0xFFE8E1D4)),
+              ),
+              child: Text(
+                description.isNotEmpty
+                    ? description
+                    : 'A descrição deste livro ainda não foi cadastrada.',
+                style: const TextStyle(
+                  color: Color(0xFF555F6D),
+                  fontSize: 13,
+                  height: 1.55,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              description.isNotEmpty
-                  ? description
-                  : 'A descrição deste livro ainda não foi cadastrada.',
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.55,
-                color: Color(0xFF586579),
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Informações',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF202B3C),
-              ),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 25),
+            _sectionTitle('Informações do exemplar'),
+            const SizedBox(height: 11),
             _metadataItem(
               icon: Icons.qr_code_rounded,
               label: 'Código do acervo',
               value: code,
             ),
             if (publisher.isNotEmpty) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 9),
               _metadataItem(
                 icon: Icons.business_outlined,
                 label: 'Editora',
@@ -322,7 +371,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
               ),
             ],
             if (year.isNotEmpty) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 9),
               _metadataItem(
                 icon: Icons.calendar_today_outlined,
                 label: 'Ano de publicação',
@@ -330,7 +379,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
               ),
             ],
             if (category.isNotEmpty) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 9),
               _metadataItem(
                 icon: Icons.category_outlined,
                 label: 'Categoria',
@@ -340,6 +389,30 @@ class _BookDetailPageState extends State<BookDetailPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _sectionTitle(String title) {
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 20,
+          decoration: BoxDecoration(
+            color: _gold,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 9),
+        Text(
+          title,
+          style: const TextStyle(
+            color: _navy,
+            fontSize: 17,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ],
     );
   }
 }
