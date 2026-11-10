@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'services/loan_service.dart';
+import 'services/admin_loan_service.dart';
 
 const _navy = Color(0xFF172B4D);
 const _gold = Color(0xFFC6A15B);
@@ -9,13 +10,15 @@ const _muted = Color(0xFF727B88);
 
 class LoanHistoryPage extends StatefulWidget {
   final String token;
-  const LoanHistoryPage({super.key, required this.token});
+  final bool isAdmin;
+  const LoanHistoryPage({super.key, required this.token, this.isAdmin = false});
   @override
   State<LoanHistoryPage> createState() => _LoanHistoryPageState();
 }
 
 class _LoanHistoryPageState extends State<LoanHistoryPage> {
   final LoanService _service = LoanService();
+  final AdminLoanService _adminService = AdminLoanService();
   List<Map<String, dynamic>> _loans = [];
   bool _loading = true;
   String? _error;
@@ -26,7 +29,9 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
   Future<void> _loadHistory() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final result = await _service.getMyLoans(token: widget.token);
+      final result = widget.isAdmin
+          ? await _adminService.getAllLoans(token: widget.token)
+          : await _service.getMyLoans(token: widget.token);
       if (!mounted) return;
       setState(() { _loans = result; _loading = false; });
     } catch (e) {
@@ -37,7 +42,12 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
 
   List<Map<String, dynamic>> get _filteredLoans => _loans
       .where((loan) => (loan['status']?.toString() ?? '').toUpperCase() == 'RETURNED')
-      .toList();
+      .toList()
+    ..sort((a, b) {
+      final dateA = DateTime.tryParse('${a['return_date'] ?? ''}') ?? DateTime(1970);
+      final dateB = DateTime.tryParse('${b['return_date'] ?? ''}') ?? DateTime(1970);
+      return dateB.compareTo(dateA);
+    });
 
   String _date(dynamic value) {
     if (value == null) return 'Não registrado';
@@ -67,7 +77,7 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final returned = _loans.where((loan) => loan['status'] == 'RETURNED').length;
+    final returned = _loans.where((loan) => (loan['status']?.toString() ?? '').toUpperCase() == 'RETURNED').length;
 
     return Scaffold(
       backgroundColor: _cream,
@@ -75,7 +85,7 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
         backgroundColor: _navy, foregroundColor: Colors.white, elevation: 0,
         title: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('Histórico', style: TextStyle(fontWeight: FontWeight.w800)),
-          Text('CONSULTA DE EMPRÉSTIMOS', style: TextStyle(color: _gold, fontSize: 9, letterSpacing: 1.5, fontWeight: FontWeight.w700)),
+          Text(widget.isAdmin ? 'DEVOLUÇÕES DE TODO O ACERVO' : 'CONSULTA DE EMPRÉSTIMOS', style: TextStyle(color: _gold, fontSize: 9, letterSpacing: 1.5, fontWeight: FontWeight.w700)),
         ]),
         actions: [IconButton(tooltip: 'Atualizar histórico', onPressed: _loading ? null : _loadHistory, icon: const Icon(Icons.refresh_rounded))],
       ),
@@ -93,9 +103,9 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
                     decoration: BoxDecoration(color: _navy, borderRadius: BorderRadius.circular(16)),
                     child: const Row(children: [
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('Seus empréstimos concluídos', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
+                        Text(widget.isAdmin ? 'Histórico geral de devoluções' : 'Seus empréstimos concluídos', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
                         SizedBox(height: 5),
-                        Text('Consulte os livros que você já devolveu e as datas de cada empréstimo.', style: TextStyle(color: Color(0xFFD5DCE5), fontSize: 11, height: 1.4)),
+                        Text(widget.isAdmin ? 'Consulte todos os livros devolvidos, quem realizou o empréstimo e as datas.' : 'Consulte os livros que você já devolveu e as datas de cada empréstimo.', style: TextStyle(color: Color(0xFFD5DCE5), fontSize: 11, height: 1.4)),
                       ])),
                       Icon(Icons.history_rounded, color: _gold, size: 35),
                     ]),
@@ -112,7 +122,7 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 50),
                       child: _message(Icons.history_toggle_off_rounded, 'Nenhum registro encontrado',
-                        'Quando você devolver um livro, o registro ficará disponível aqui.'),
+                        widget.isAdmin ? 'Quando um livro for devolvido, o registro aparecerá aqui.' : 'Quando você devolver um livro, o registro ficará disponível aqui.'),
                     )
                   else
                     for (final loan in _filteredLoans) ...[
@@ -160,6 +170,10 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
           ),
         ]),
         const Padding(padding: EdgeInsets.symmetric(vertical: 11), child: Divider(height: 1, color: Color(0xFFE8E1D4))),
+        if (widget.isAdmin) ...[
+          _dateRow(Icons.person_outline_rounded, 'Emprestado para', (loan['user_name'] ?? 'Usuário não informado').toString()),
+          const SizedBox(height: 8),
+        ],
         _dateRow(Icons.login_rounded, 'Retirado em', _date(loan['loan_date'])),
         const SizedBox(height: 8),
         _dateRow(Icons.event_outlined, 'Prazo de devolução', _date(loan['due_date'])),
