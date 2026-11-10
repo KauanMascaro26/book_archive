@@ -197,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                       border: Border.all(color: const Color(0xFFE9E2D5)),
                       boxShadow: [
                         BoxShadow(
-                          color: bimNavy.withOpacity(0.07),
+                          color: bimNavy.withValues(alpha: 0.07),
                           blurRadius: 22,
                           offset: const Offset(0, 9),
                         ),
