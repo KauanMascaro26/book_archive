@@ -52,3 +52,49 @@ class AuthService {
     };
   }
 }
+  Future<Map<String, dynamic>> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/users/'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'name': name.trim(),
+        'email': email.trim().toLowerCase(),
+        'password': password,
+      }),
+    );
+
+    dynamic decoded;
+    if (response.body.isNotEmpty) {
+      decoded = jsonDecode(response.body);
+    }
+
+    if (response.statusCode == 201 && decoded is Map<String, dynamic>) {
+      return decoded;
+    }
+
+    if (decoded is Map<String, dynamic>) {
+      final detail = decoded['detail'];
+
+      if (detail is List) {
+        final messages = detail.map((item) {
+          if (item is Map) {
+            return item['msg']?.toString() ?? 'Dados inválidos.';
+          }
+          return item.toString();
+        }).join(' ');
+        throw Exception(messages);
+      }
+
+      throw Exception(
+        detail?.toString() ?? 'Não foi possível realizar o cadastro.',
+      );
+    }
+
+    throw Exception('Não foi possível realizar o cadastro.');
+  }
