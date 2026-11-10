@@ -163,7 +163,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       border: Border.all(color: const Color(0xFFE9E2D5)),
                       boxShadow: [
                         BoxShadow(
-                          color: _bimNavy.withOpacity(0.07),
+                          color: _bimNavy.withValues(alpha: 0.07),
                           blurRadius: 22,
                           offset: const Offset(0, 9),
                         ),
