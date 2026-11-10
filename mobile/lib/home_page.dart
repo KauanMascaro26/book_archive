@@ -215,7 +215,7 @@ class _HomePageState extends State<HomePage> {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 22),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -259,7 +259,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 11),
 
               // Pesquisa compacta.
               Container(
@@ -316,7 +316,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 11),
               _buildFeaturedBook(),
             ],
           ),
@@ -329,10 +329,10 @@ class _HomePageState extends State<HomePage> {
   Widget _buildFeaturedBook() {
     return Container(
       width: double.infinity,
-      constraints: const BoxConstraints(minHeight: 142),
+      constraints: const BoxConstraints(minHeight: 116),
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
-        vertical: 14,
+        vertical: 10,
       ),
       decoration: BoxDecoration(
         color: const Color(0xFF0A223F),
@@ -363,7 +363,7 @@ class _HomePageState extends State<HomePage> {
                   'Em breve',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 22,
+                    fontSize: 19,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -432,19 +432,28 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         color: cardWhite,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 34, 16, 26),
+          padding: const EdgeInsets.fromLTRB(16, 25, 16, 22),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionHeading(
-                'Acesso rápido',
-                'Ver todos',
-                _openCatalog,
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Acesso rápido',
+                      style: TextStyle(
+                        color: textNavy,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               _buildQuickAccessGrid(),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 16),
 
               _buildSectionHeading(
                 'Meus empréstimos',
@@ -454,7 +463,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 10),
               _buildLoansSection(),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 16),
 
               _buildSectionHeading(
                 'Últimos adicionados',
@@ -563,9 +572,9 @@ class _HomePageState extends State<HomePage> {
       gridDelegate:
           const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 1.22,
+        mainAxisSpacing: 6,
+        crossAxisSpacing: 6,
+        childAspectRatio: 1.32,
       ),
       itemBuilder: (context, index) {
         final item = items[index];
