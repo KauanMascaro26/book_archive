@@ -30,6 +30,6 @@ class FavoriteService {
       final detail = decoded is Map ? decoded['detail'] : null;
       if (detail is String && detail.isNotEmpty) return detail;
     } catch (_) {}
-    return 'Não foi possível atualizar os favoritos (' + response.statusCode.toString() + ').';
+    return 'Não foi possível atualizar os favoritos (${response.statusCode}).';
   }
 }
