@@ -83,7 +83,7 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
       backgroundColor: _cream,
       appBar: AppBar(
         backgroundColor: _navy, foregroundColor: Colors.white, elevation: 0,
-        title: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('Histórico', style: TextStyle(fontWeight: FontWeight.w800)),
           Text(widget.isAdmin ? 'DEVOLUÇÕES DE TODO O ACERVO' : 'CONSULTA DE EMPRÉSTIMOS', style: TextStyle(color: _gold, fontSize: 9, letterSpacing: 1.5, fontWeight: FontWeight.w700)),
         ]),
@@ -101,7 +101,7 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
                   Container(
                     padding: const EdgeInsets.all(17),
                     decoration: BoxDecoration(color: _navy, borderRadius: BorderRadius.circular(16)),
-                    child: const Row(children: [
+                    child: Row(children: [
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(widget.isAdmin ? 'Histórico geral de devoluções' : 'Seus empréstimos concluídos', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
                         SizedBox(height: 5),
