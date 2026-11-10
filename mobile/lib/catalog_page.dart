@@ -300,7 +300,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                     maxCrossAxisExtent: 220,
                                     crossAxisSpacing: 16,
                                     mainAxisSpacing: 18,
-                                    childAspectRatio: 0.66,
+                                    childAspectRatio: 0.50,
                                   ),
                                   itemCount: filteredBooks.length,
                                   itemBuilder: (context, index) {
@@ -315,10 +315,6 @@ class _CatalogPageState extends State<CatalogPage> {
                                         .toString();
                                     final code =
                                         (book['code'] ?? '-').toString();
-                                    final category =
-                                        (book['category'] ?? '').toString().trim();
-                                    final year =
-                                        (book['year'] ?? '').toString().trim();
 
                                     return Material(
                                       color: _paper,
@@ -348,7 +344,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                                 CrossAxisAlignment.stretch,
                                             children: [
                                               Expanded(
-                                                flex: 5,
+                                                flex: 7,
                                                 child: Container(
                                                   decoration: const BoxDecoration(
                                                     gradient: LinearGradient(
@@ -441,27 +437,12 @@ class _CatalogPageState extends State<CatalogPage> {
                                                           ),
                                                         ),
                                                       ),
-                                                      Positioned(
-                                                        bottom: 10,
-                                                        left: 0,
-                                                        right: 0,
-                                                        child: Text(
-                                                          'BIBLIOTECA BIM',
-                                                          textAlign: TextAlign.center,
-                                                          style: TextStyle(
-                                                            color: _navy.withValues(alpha: 0.48),
-                                                            fontSize: 8,
-                                                            letterSpacing: 1.6,
-                                                            fontWeight: FontWeight.w800,
-                                                          ),
-                                                        ),
-                                                      ),
                                                     ],
                                                   ),
                                                 ),
                                               ),
                                               Expanded(
-                                                flex: 6,
+                                                flex: 3,
                                                 child: Padding(
                                                   padding:
                                                       const EdgeInsets.all(10),
@@ -494,38 +475,29 @@ class _CatalogPageState extends State<CatalogPage> {
                                                           fontSize: 11,
                                                         ),
                                                       ),
-                                                      const SizedBox(height: 8),
-                                                      Expanded(
-                                                        child: Align(
-                                                          alignment: Alignment.centerLeft,
-                                                          child: Wrap(
-                                                            spacing: 6,
-                                                            runSpacing: 6,
-                                                            children: [
-                                                              if (category.isNotEmpty)
-                                                                _buildInfoTag(
-                                                                  Icons.category_outlined,
-                                                                  category,
-                                                                ),
-                                                              if (year.isNotEmpty)
-                                                                _buildInfoTag(
-                                                                  Icons.calendar_today_outlined,
-                                                                  year,
-                                                                ),
-                                                            ],
-                                                          ),
+                                                      const Spacer(),
+                                                      Container(
+                                                        width: double.infinity,
+                                                        padding: const EdgeInsets.symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 6,
                                                         ),
-                                                      ),
-
-                                                      const SizedBox(height: 8),
-                                                      Text(
-                                                        code,
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: const TextStyle(
-                                                          color: _muted,
-                                                          fontSize: 9,
+                                                        decoration: BoxDecoration(
+                                                          color: const Color(0xFFF7F4ED),
+                                                          borderRadius: BorderRadius.circular(7),
+                                                          border: Border.all(color: AppTheme.border),
+                                                        ),
+                                                        child: Text(
+                                                          code,
+                                                          textAlign: TextAlign.center,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: const TextStyle(
+                                                            color: _muted,
+                                                            fontSize: 10,
+                                                            fontWeight: FontWeight.w700,
+                                                            letterSpacing: 0.5,
+                                                          ),
                                                         ),
                                                       ),
                                                     ],
