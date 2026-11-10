@@ -1,7 +1,7 @@
 
 from datetime import datetime
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_admin
@@ -83,3 +83,37 @@ def get_all_loans(
         })
 
     return results
+
+
+
+@router.patch("/{loan_id}/return")
+def register_loan_return(
+    loan_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    loan = db.query(Loan).filter(Loan.id == loan_id).first()
+    if loan is None:
+        raise HTTPException(status_code=404, detail="Empréstimo não encontrado.")
+
+    if loan.status == "RETURNED":
+        raise HTTPException(status_code=409, detail="Este empréstimo já foi devolvido.")
+
+    book = db.query(Book).filter(Book.id == loan.book_id).first()
+    if book is None:
+        raise HTTPException(status_code=404, detail="Livro vinculado ao empréstimo não encontrado.")
+
+    loan.status = "RETURNED"
+    loan.return_date = datetime.utcnow()
+    book.available = True
+
+    db.commit()
+    db.refresh(loan)
+
+    return {
+        "message": "Devolução registrada com sucesso.",
+        "loan_id": loan.id,
+        "status": loan.status,
+        "return_date": loan.return_date,
+        "book_available": book.available,
+    }
