@@ -322,7 +322,7 @@ class _CatalogPageState extends State<CatalogPage> {
 
                                     return Material(
                                       color: _paper,
-                                      borderRadius: BorderRadius.circular(18),
+                                      borderRadius: BorderRadius.circular(14),
                                       clipBehavior: Clip.antiAlias,
                                       child: InkWell(
                                         onTap: () {
@@ -338,7 +338,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                         child: Container(
                                           decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(15),
+                                                BorderRadius.circular(14),
                                             border: Border.all(
                                               color: AppTheme.border,
                                             ),
@@ -496,25 +496,37 @@ class _CatalogPageState extends State<CatalogPage> {
                                                       ),
                                                       const SizedBox(height: 8),
                                                       Expanded(
-                                                        child: Text(
-                                                          description.isEmpty
-                                                              ? 'Descrição ainda não cadastrada.'
-                                                              : description,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              const TextStyle(
-                                                            color: _muted,
-                                                            fontSize: 10,
-                                                            height: 1.35,
+                                                        child: Container(
+                                                          width: double.infinity,
+                                                          padding: const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 7,
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            color: const Color(0xFFF8F6F0),
+                                                            borderRadius: BorderRadius.circular(8),
+                                                          ),
+                                                          child: Align(
+                                                            alignment: Alignment.topLeft,
+                                                            child: Text(
+                                                              description.isEmpty
+                                                                  ? 'Descrição ainda não cadastrada.'
+                                                                  : description,
+                                                              maxLines: 3,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: const TextStyle(
+                                                                color: _muted,
+                                                                fontSize: 10,
+                                                                height: 1.3,
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
 
                                                       const SizedBox(height: 8),
                                                       Text(
-                                                        'CÓD. $code',
+                                                        code,
                                                         maxLines: 1,
                                                         overflow: TextOverflow
                                                             .ellipsis,
