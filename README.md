@@ -2,13 +2,9 @@
 
 Sistema de gerenciamento de acervo e empréstimos de livros, desenvolvido para facilitar a consulta ao catálogo, a solicitação de empréstimos e a administração da biblioteca.
 
-## Acesso ao sistema
+## Hospedagem
 
-- **Aplicação web:** https://bim-project-367e2.web.app
-- **API (backend):** https://bim-backend-os3d.onrender.com
-- **Documentação interativa da API:** https://bim-backend-os3d.onrender.com/docs
-
-> O aplicativo web está publicado no Firebase Hosting. O backend é executado no Render e os dados são armazenados no PostgreSQL do Supabase.
+O aplicativo web, a API e o banco de dados estão hospedados em serviços de nuvem. Os endereços públicos de acesso não são listados neste README.
 
 ## Funcionalidades
 
