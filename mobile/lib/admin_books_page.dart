@@ -73,129 +73,14 @@ class _AdminBooksPageState extends State<AdminBooksPage> {
   }
 
   Future<void> _showBookForm({Map<String, dynamic>? book}) async {
-    final code = TextEditingController(text: book?['code']?.toString() ?? '');
-    final title = TextEditingController(text: book?['title']?.toString() ?? '');
-    final author = TextEditingController(text: book?['author']?.toString() ?? '');
-    final publisher = TextEditingController(text: book?['publisher']?.toString() ?? '');
-    final year = TextEditingController(text: book?['year']?.toString() ?? '');
-    final category = TextEditingController(text: book?['category']?.toString() ?? '');
-    final description = TextEditingController(text: book?['description']?.toString() ?? '');
-    final formKey = GlobalKey<FormState>();
-
     final data = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: _paper,
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          book == null ? 'Cadastrar livro' : 'Editar livro',
-          style: const TextStyle(color: _navy, fontWeight: FontWeight.w800),
-        ),
-        content: SizedBox(
-          width: 440,
-          child: Form(
-            key: formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _field(code, 'Código (ex.: M000001)', required: true, maxLength: 7),
-                  _field(title, 'Título', required: true, maxLength: 200),
-                  _field(author, 'Autor', required: true, maxLength: 150),
-                  _field(publisher, 'Editora', maxLength: 150),
-                  _field(year, 'Ano de publicação', numeric: true),
-                  _field(category, 'Categoria', maxLength: 100),
-                  _field(description, 'Descrição', maxLength: 500, maxLines: 3),
-                ],
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar', style: TextStyle(color: _muted)),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (!formKey.currentState!.validate()) return;
-              final parsedYear = int.tryParse(year.text.trim());
-              if (year.text.trim().isNotEmpty && parsedYear == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Informe um ano válido.')),
-                );
-                return;
-              }
-              Navigator.pop(dialogContext, {
-                'code': code.text.trim().toUpperCase(),
-                'title': title.text.trim(),
-                'author': author.text.trim(),
-                'publisher': publisher.text.trim().isEmpty ? null : publisher.text.trim(),
-                'year': parsedYear,
-                'category': category.text.trim().isEmpty ? null : category.text.trim(),
-                'description': description.text.trim().isEmpty ? null : description.text.trim(),
-              });
-            },
-            style: FilledButton.styleFrom(backgroundColor: _gold, foregroundColor: _navy),
-            child: const Text('Salvar'),
-          ),
-        ],
-      ),
+      barrierDismissible: false,
+      builder: (_) => _BookFormDialog(book: book),
     );
-
-    code.dispose();
-    title.dispose();
-    author.dispose();
-    publisher.dispose();
-    year.dispose();
-    category.dispose();
-    description.dispose();
 
     if (data == null || !mounted) return;
     await _saveBook(data, bookId: book?['id'] as int?);
-  }
-
-  Widget _field(
-    TextEditingController controller,
-    String label, {
-    bool required = false,
-    bool numeric = false,
-    int? maxLength,
-    int maxLines = 1,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 11),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: numeric ? TextInputType.number : TextInputType.text,
-        maxLength: maxLength,
-        maxLines: maxLines,
-        style: const TextStyle(color: _navy, fontSize: 13),
-        validator: required
-            ? (value) => value == null || value.trim().isEmpty ? 'Campo obrigatório.' : null
-            : null,
-        decoration: InputDecoration(
-          labelText: label,
-          counterText: '',
-          labelStyle: const TextStyle(color: _muted, fontSize: 12),
-          filled: true,
-          fillColor: _cream,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFE8E1D4)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFE8E1D4)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: _gold, width: 1.5),
-          ),
-        ),
-      ),
-    );
   }
 
   Future<void> _saveBook(Map<String, dynamic> data, {int? bookId}) async {
@@ -437,3 +322,169 @@ class _AdminBooksPageState extends State<AdminBooksPage> {
     );
   }
 }
+
+class _BookFormDialog extends StatefulWidget {
+  final Map<String, dynamic>? book;
+
+  const _BookFormDialog({this.book});
+
+  @override
+  State<_BookFormDialog> createState() => _BookFormDialogState();
+}
+
+class _BookFormDialogState extends State<_BookFormDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _code;
+  late final TextEditingController _title;
+  late final TextEditingController _author;
+  late final TextEditingController _publisher;
+  late final TextEditingController _year;
+  late final TextEditingController _category;
+  late final TextEditingController _description;
+
+  @override
+  void initState() {
+    super.initState();
+    final book = widget.book;
+    _code = TextEditingController(text: book?['code']?.toString() ?? '');
+    _title = TextEditingController(text: book?['title']?.toString() ?? '');
+    _author = TextEditingController(text: book?['author']?.toString() ?? '');
+    _publisher = TextEditingController(text: book?['publisher']?.toString() ?? '');
+    _year = TextEditingController(text: book?['year']?.toString() ?? '');
+    _category = TextEditingController(text: book?['category']?.toString() ?? '');
+    _description = TextEditingController(text: book?['description']?.toString() ?? '');
+  }
+
+  @override
+  void dispose() {
+    _code.dispose();
+    _title.dispose();
+    _author.dispose();
+    _publisher.dispose();
+    _year.dispose();
+    _category.dispose();
+    _description.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    final yearText = _year.text.trim();
+    final parsedYear = yearText.isEmpty ? null : int.tryParse(yearText);
+    if (yearText.isNotEmpty && parsedYear == null) return;
+
+    Navigator.of(context).pop(<String, dynamic>{
+      'code': _code.text.trim().toUpperCase(),
+      'title': _title.text.trim(),
+      'author': _author.text.trim(),
+      'publisher': _publisher.text.trim().isEmpty ? null : _publisher.text.trim(),
+      'year': parsedYear,
+      'category': _category.text.trim().isEmpty ? null : _category.text.trim(),
+      'description': _description.text.trim().isEmpty ? null : _description.text.trim(),
+    });
+  }
+
+  Widget _field(
+    TextEditingController controller,
+    String label, {
+    bool required = false,
+    bool numeric = false,
+    int? maxLength,
+    int maxLines = 1,
+    String? Function(String?)? extraValidator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 11),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: numeric ? TextInputType.number : TextInputType.text,
+        maxLength: maxLength,
+        maxLines: maxLines,
+        style: const TextStyle(color: _navy, fontSize: 13),
+        validator: (value) {
+          if (required && (value == null || value.trim().isEmpty)) {
+            return 'Campo obrigatório.';
+          }
+          return extraValidator?.call(value);
+        },
+        decoration: InputDecoration(
+          labelText: label,
+          counterText: '',
+          labelStyle: const TextStyle(color: _muted, fontSize: 12),
+          filled: true,
+          fillColor: _cream,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Color(0xFFE8E1D4)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Color(0xFFE8E1D4)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: _gold, width: 1.5),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: _paper,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      title: Text(
+        widget.book == null ? 'Cadastrar livro' : 'Editar livro',
+        style: const TextStyle(color: _navy, fontWeight: FontWeight.w800),
+      ),
+      content: SizedBox(
+        width: 440,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _field(_code, 'Código (ex.: M000001)', required: true, maxLength: 7),
+                _field(_title, 'Título', required: true, maxLength: 200),
+                _field(_author, 'Autor', required: true, maxLength: 150),
+                _field(_publisher, 'Editora', maxLength: 150),
+                _field(
+                  _year,
+                  'Ano de publicação',
+                  numeric: true,
+                  extraValidator: (value) {
+                    if (value == null || value.trim().isEmpty) return null;
+                    return int.tryParse(value.trim()) == null
+                        ? 'Informe um ano válido.'
+                        : null;
+                  },
+                ),
+                _field(_category, 'Categoria', maxLength: 100),
+                _field(_description, 'Descrição', maxLength: 500, maxLines: 3),
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancelar', style: TextStyle(color: _muted)),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          style: FilledButton.styleFrom(
+            backgroundColor: _gold,
+            foregroundColor: _navy,
+          ),
+          child: const Text('Salvar'),
+        ),
+      ],
+    );
+  }
+}
+
