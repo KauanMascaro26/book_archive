@@ -549,7 +549,7 @@ class _HomePageState extends State<HomePage> {
         icon: Icons.history_rounded,
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => LoanHistoryPage(token: widget.token),
+            builder: (_) => LoanHistoryPage(token: widget.token, isAdmin: _isAdmin),
           ),
         ),
       ),
