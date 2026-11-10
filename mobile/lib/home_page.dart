@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'admin_requests_page.dart';
+import 'admin_books_page.dart';
 import 'admin_loans_page.dart';
 import 'catalog_page.dart';
 import 'my_loans_page.dart';
@@ -95,17 +96,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _selectTab(int index) {
-    if (index < 0 || index >= (_isAdmin ? 5 : 4)) return;
+    if (index < 0 || index >= (_isAdmin ? 6 : 4)) return;
     FocusScope.of(context).unfocus();
     setState(() => _selectedIndex = index);
-    if ((!_isAdmin && index == 2) || (_isAdmin && index == 3)) {
+    if ((!_isAdmin && index == 2) || (_isAdmin && index == 4)) {
       _loadLoans();
     }
   }
 
   void _openCatalog() => _selectTab(1);
 
-  void _openMyLoans() => _selectTab(_isAdmin ? 3 : 2);
+  void _openMyLoans() => _selectTab(_isAdmin ? 4 : 2);
 
   void _openAdminRequests() => _selectTab(2);
 
@@ -160,6 +161,7 @@ class _HomePageState extends State<HomePage> {
       _buildDashboard(),
       CatalogPage(token: widget.token),
       if (_isAdmin) ...[
+        AdminBooksPage(token: widget.token),
         AdminRequestsPage(token: widget.token),
         AdminLoansPage(token: widget.token),
       ] else
@@ -909,8 +911,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () =>
-                  _showComingSoon('Cadastro de livros'),
+              onPressed: () => _selectTab(2),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
                 side: const BorderSide(
@@ -918,7 +919,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               icon: const Icon(Icons.add_circle_outline_rounded),
-              label: const Text('Cadastrar livro'),
+              label: const Text('Gerenciar acervo'),
             ),
           ),
         ],
@@ -1100,7 +1101,8 @@ class _HomePageState extends State<HomePage> {
         ? const [
             (Icons.home_outlined, 'Início'),
             (Icons.menu_book_outlined, 'Biblioteca'),
-            (Icons.pending_actions_outlined, 'Solicitações'),
+            (Icons.edit_note_rounded, 'Acervo'),
+            (Icons.pending_actions_outlined, 'Pedidos'),
             (Icons.library_books_outlined, 'Empréstimos'),
             (Icons.person_outline_rounded, 'Perfil'),
           ]
