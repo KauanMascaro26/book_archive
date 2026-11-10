@@ -1,111 +1,133 @@
 # BIM — Biblioteca dos Irmãos da Memphis
 
-Sistema de gerenciamento de acervo e empréstimos de livros, desenvolvido para facilitar a consulta ao catálogo, a solicitação de empréstimos e a administração da biblioteca.
+Aplicação para gerenciamento do acervo da Biblioteca dos Irmãos da Memphis. O sistema permite consultar livros, solicitar empréstimos e administrar solicitações, empréstimos e devoluções.
 
-## Hospedagem
+> **Status:** versão web publicada para validação. A versão Android ainda precisa passar pelas etapas de revisão, testes e preparação de distribuição descritas nas [Issues](../../issues).
 
-O aplicativo web, a API e o banco de dados estão hospedados em serviços de nuvem. Os endereços públicos de acesso não são listados neste README.
+## Visão geral
 
-## Funcionalidades
+O BIM é composto por uma aplicação Flutter, uma API REST em FastAPI e um banco de dados PostgreSQL. A mesma base Flutter atende à experiência mobile e web.
+
+### Funcionalidades implementadas
 
 - Cadastro e autenticação de usuários.
-- Consulta ao catálogo de livros.
+- Autenticação baseada em JWT e identificação do perfil do usuário.
+- Catálogo de livros e pesquisa.
 - Visualização dos detalhes e disponibilidade dos livros.
 - Solicitação de empréstimos.
-- Consulta e gerenciamento de solicitações pelo administrador.
-- Registro e acompanhamento de empréstimos e devoluções.
+- Fluxo administrativo para consultar, aprovar e rejeitar solicitações.
+- Consulta de empréstimos e registro de devoluções.
 - Favoritos.
-- Controle de acesso conforme o perfil do usuário.
+- Controle de acesso a operações administrativas.
+- Interface com identidade visual própria do BIM.
 
-## Tecnologias
+### Em desenvolvimento / validação para a versão Android
 
-### Aplicação mobile e web
-- Flutter
-- Dart
+- Persistência de sessão e fluxo completo de logout.
+- Finalização de informações e atalhos do painel do usuário.
+- Revisão de navegação, mensagens, estados de carregamento e erros.
+- Testes completos dos fluxos integrados ao ambiente de produção.
+- Ajustes de layout e usabilidade em diferentes tamanhos de tela.
+- Preparação, assinatura e validação do pacote Android para distribuição.
 
-### Backend
-- Python
-- FastAPI
-- SQLAlchemy
-- Autenticação com tokens JWT
-
-### Banco de dados
-- PostgreSQL
-- Supabase
-
-### Hospedagem e infraestrutura
-- Firebase Hosting — aplicação Flutter Web
-- Render — API FastAPI
-- Supabase — banco de dados PostgreSQL
+Acompanhe o progresso e as tarefas em aberto na área de [Issues](../../issues).
 
 ## Arquitetura
 
 ```text
-Navegador / Aplicativo Flutter
-             |
-             v
-       Firebase Hosting
-       (Flutter Web)
-             |
-             v
-       Render — FastAPI
-             |
-             v
-     Supabase — PostgreSQL
+Flutter (Android / Web)
+          |
+          v
+       REST API
+       FastAPI
+          |
+          v
+     PostgreSQL
 ```
 
-A aplicação Flutter também pode ser executada em dispositivos Android. O frontend consome a API REST do backend, que acessa o banco PostgreSQL.
+### Infraestrutura de hospedagem
 
-## Estrutura do projeto
+| Componente | Tecnologia / serviço |
+|---|---|
+| Aplicação web | Firebase Hosting |
+| API | Render |
+| Banco de dados | Supabase PostgreSQL |
+
+Os endereços públicos dos serviços não são listados neste README. As credenciais e configurações sensíveis devem permanecer em variáveis de ambiente, nunca no repositório.
+
+## Tecnologias
+
+**Frontend**
+- Flutter
+- Dart
+
+**Backend**
+- Python
+- FastAPI
+- SQLAlchemy
+- Pydantic
+- JWT
+
+**Banco de dados**
+- PostgreSQL
+- Supabase
+
+**Infraestrutura**
+- Firebase Hosting
+- Render
+- Git e GitHub
+
+## Estrutura do repositório
 
 ```text
 book_archive/
 ├── backend/
 │   ├── app/
-│   │   ├── core/
-│   │   ├── models/
-│   │   ├── routers/
+│   │   ├── core/          # Segurança e configurações centrais
+│   │   ├── models/        # Modelos SQLAlchemy
+│   │   ├── routers/       # Rotas da API
 │   │   └── ...
 │   ├── requirements.txt
-│   └── .env                 # Variáveis locais (não versionar)
+│   └── .env               # Configuração local; não versionar
 ├── mobile/
 │   ├── android/
-│   ├── lib/
+│   ├── lib/               # Código Dart/Flutter
 │   ├── web/
-│   ├── build/
 │   ├── firebase.json
 │   └── pubspec.yaml
 └── README.md
 ```
 
-## Executar localmente
+## Executar o projeto localmente
+
+### Pré-requisitos
+
+- Python instalado.
+- Flutter SDK instalado.
+- Git.
+- Acesso a uma instância PostgreSQL.
 
 ### 1. Backend
 
-Entre na pasta do backend:
+Na raiz do repositório:
 
 ```bash
 cd backend
-```
-
-Crie e ative um ambiente virtual, instale as dependências e configure as variáveis de ambiente:
-
-```bash
 python -m venv venv
 ```
 
-No Windows (PowerShell):
+No Windows PowerShell, ative o ambiente e instale as dependências:
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-Crie um arquivo `.env` dentro de `backend/` com as configurações necessárias:
+Crie `backend/.env` com as configurações locais:
 
 ```env
 DATABASE_URL=sua_url_de_conexao_postgresql
-SECRET_KEY=gere_uma_chave_secreta_forte
+SECRET_KEY=sua_chave_secreta_forte
 ```
 
 Inicie a API:
@@ -114,9 +136,9 @@ Inicie a API:
 uvicorn app.main:app --reload
 ```
 
-Por padrão, a API local pode ser acessada em `http://127.0.0.1:8000`, e a documentação em `http://127.0.0.1:8000/docs`.
+Por padrão, a API local fica disponível em `http://127.0.0.1:8000` e a documentação interativa em `http://127.0.0.1:8000/docs`.
 
-### 2. Aplicação Flutter
+### 2. Flutter
 
 Em outro terminal:
 
@@ -126,24 +148,24 @@ flutter pub get
 flutter run
 ```
 
-Para executar no navegador:
+Para executar no Chrome:
 
 ```bash
 flutter run -d chrome
 ```
 
-## Gerar e publicar a versão web
+## Build e publicação web
 
-Gere a versão de produção:
+Gere a versão web otimizada:
 
 ```bash
 cd mobile
 flutter build web --release
 ```
 
-O resultado será gerado em `mobile/build/web`.
+Os arquivos de publicação são gerados em `mobile/build/web`.
 
-Para publicar no Firebase Hosting, com o Firebase CLI instalado e autenticado:
+Com o Firebase CLI instalado e autenticado, publique a aplicação:
 
 ```bash
 firebase deploy --only hosting
@@ -151,17 +173,30 @@ firebase deploy --only hosting
 
 A configuração do Hosting utiliza `build/web` como diretório público.
 
-## Variáveis de ambiente e segurança
+## Segurança e configuração
 
-- Não inclua arquivos `.env`, senhas, tokens ou chaves privadas no Git.
-- Configure `DATABASE_URL` e `SECRET_KEY` como variáveis de ambiente no ambiente de hospedagem.
-- Configure as origens permitidas do CORS para os domínios utilizados pela aplicação.
-- Nunca utilize credenciais reais diretamente no código-fonte.
+- Nunca versione arquivos `.env`, senhas, tokens, chaves privadas ou keystores.
+- Configure `DATABASE_URL` e `SECRET_KEY` por variáveis de ambiente no serviço de hospedagem.
+- Restrinja o CORS às origens realmente utilizadas pela aplicação.
+- Mantenha rotas administrativas protegidas no backend; esconder botões no frontend não substitui autorização na API.
+- Não inclua credenciais reais em issues, commits, screenshots ou documentação.
 
-## Observações sobre o plano gratuito
+## Plano de trabalho
 
-Os serviços utilizados possuem limites e políticas próprias nos planos gratuitos. O Render pode suspender temporariamente o serviço após um período sem tráfego, e o Supabase pode pausar projetos gratuitos inativos. Assim, o primeiro acesso após um período de inatividade pode demorar.
+O desenvolvimento é acompanhado por GitHub Issues. As issues registram o histórico do que já foi implementado e o trabalho restante para preparar a versão mobile.
+
+Prioridades para a distribuição Android:
+1. Fechar pendências de autenticação, sessão e regras de negócio.
+2. Revisar experiência mobile e estados de interface.
+3. Executar testes integrados usando o backend e banco hospedados.
+4. Revisar segurança e configurações de produção.
+5. Gerar, assinar e testar o pacote Android.
+6. Preparar a distribuição escolhida (APK para distribuição direta ou AAB para Google Play).
+
+## Observações sobre os planos gratuitos
+
+Os provedores de hospedagem possuem cotas e políticas próprias. No plano gratuito, o backend pode entrar em suspensão após um período sem tráfego e o banco pode sofrer pausa por inatividade. O primeiro acesso após esses períodos pode apresentar demora.
 
 ---
 
-Projeto BIM — Biblioteca dos Irmãos da Memphis.
+**BIM — Biblioteca dos Irmãos da Memphis**
