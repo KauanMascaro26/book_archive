@@ -10,8 +10,9 @@ const _muted = Color(0xFF727B88);
 
 class AdminBooksPage extends StatefulWidget {
   final String token;
+  final VoidCallback? onBooksChanged;
 
-  const AdminBooksPage({super.key, required this.token});
+  const AdminBooksPage({super.key, required this.token, this.onBooksChanged});
 
   @override
   State<AdminBooksPage> createState() => _AdminBooksPageState();
@@ -206,6 +207,7 @@ class _AdminBooksPageState extends State<AdminBooksPage> {
         await _service.updateBook(token: widget.token, bookId: bookId, data: data);
       }
       if (!mounted) return;
+      widget.onBooksChanged?.call();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(bookId == null ? 'Livro cadastrado com sucesso.' : 'Livro atualizado com sucesso.')),
       );
@@ -246,6 +248,7 @@ class _AdminBooksPageState extends State<AdminBooksPage> {
     try {
       await _service.deleteBook(token: widget.token, bookId: book['id'] as int);
       if (!mounted) return;
+      widget.onBooksChanged?.call();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Livro excluído do acervo.')),
       );
