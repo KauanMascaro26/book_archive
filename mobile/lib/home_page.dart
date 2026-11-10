@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'admin_requests_page.dart';
 import 'favorites_page.dart';
+import 'loan_history_page.dart';
 import 'admin_books_page.dart';
 import 'admin_loans_page.dart';
 import 'catalog_page.dart';
@@ -537,7 +538,11 @@ class _HomePageState extends State<HomePage> {
       _QuickAccessItem(
         label: 'Histórico',
         icon: Icons.history_rounded,
-        onTap: () => _showComingSoon('Histórico'),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => LoanHistoryPage(token: widget.token),
+          ),
+        ),
       ),
       _QuickAccessItem(
         label: 'Categorias',
