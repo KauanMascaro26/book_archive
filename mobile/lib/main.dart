@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'services/auth_service.dart';
 import 'home_page.dart';
+import 'register_page.dart';
 
 void main() {
   runApp(const BookArchiveApp());
@@ -114,6 +115,26 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     }
+  }
+
+  Future<void> _openRegister() async {
+    final registeredEmail = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const RegisterPage(),
+      ),
+    );
+
+    if (!mounted || registeredEmail == null) return;
+
+    emailController.text = registeredEmail;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Cadastro realizado! Agora você pode entrar.'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -341,7 +362,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: _openRegister,
                         child: const Text(
                           'Cadastre-se',
                           style: TextStyle(
