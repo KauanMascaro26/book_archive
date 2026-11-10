@@ -25,6 +25,8 @@ class _CatalogPageState extends State<CatalogPage> {
   bool loading = true;
   String? error;
   String searchQuery = '';
+  String? selectedCategory;
+  String? selectedAuthor;
 
   @override
   void initState() {
@@ -61,13 +63,31 @@ class _CatalogPageState extends State<CatalogPage> {
   @override
   Widget build(BuildContext context) {
     final normalizedQuery = searchQuery.trim().toLowerCase();
+    final categories = books
+        .map((book) => (book['category'] ?? '').toString().trim())
+        .where((value) => value.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    final authors = books
+        .map((book) => (book['author'] ?? '').toString().trim())
+        .where((value) => value.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     final filteredBooks = books.where((book) {
+      final category = (book['category'] ?? '').toString().trim();
       final title = (book['title'] ?? '').toString().toLowerCase();
       final author = (book['author'] ?? '').toString().toLowerCase();
       final code = (book['code'] ?? '').toString().toLowerCase();
-      return title.contains(normalizedQuery) ||
+      final matchesQuery = title.contains(normalizedQuery) ||
           author.contains(normalizedQuery) ||
           code.contains(normalizedQuery);
+      final matchesCategory = selectedCategory == null ||
+          category.toLowerCase() == selectedCategory!.toLowerCase();
+      final matchesAuthor = selectedAuthor == null ||
+          author == selectedAuthor!.toLowerCase();
+      return matchesQuery && matchesCategory && matchesAuthor;
     }).toList();
 
     return Scaffold(
@@ -185,6 +205,46 @@ class _CatalogPageState extends State<CatalogPage> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 9),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildFilterDropdown(
+                                  hint: 'Categoria',
+                                  value: selectedCategory,
+                                  values: categories,
+                                  onChanged: (value) =>
+                                      setState(() => selectedCategory = value),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: _buildFilterDropdown(
+                                  hint: 'Autor',
+                                  value: selectedAuthor,
+                                  values: authors,
+                                  onChanged: (value) =>
+                                      setState(() => selectedAuthor = value),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (selectedCategory != null || selectedAuthor != null)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton.icon(
+                                onPressed: () => setState(() {
+                                  selectedCategory = null;
+                                  selectedAuthor = null;
+                                }),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: _gold,
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                                icon: const Icon(Icons.filter_alt_off_rounded, size: 15),
+                                label: const Text('Limpar filtros', style: TextStyle(fontSize: 11)),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -224,7 +284,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                   icon: Icons.search_off_rounded,
                                   title: 'Nenhum resultado',
                                   message:
-                                      'Tente buscar por outro título, autor ou código.',
+                                      'Tente ajustar a busca ou os filtros de categoria e autor.',
                                 )
                               : GridView.builder(
                                   padding: const EdgeInsets.fromLTRB(
@@ -459,6 +519,46 @@ class _CatalogPageState extends State<CatalogPage> {
                     ),
                   ],
                 ),
+    );
+  }
+
+
+  Widget _buildFilterDropdown({
+    required String hint,
+    required String? value,
+    required List<String> values,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Container(
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: _paper,
+        borderRadius: BorderRadius.circular(11),
+        border: Border.all(color: const Color(0xFFE8E1D4)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          isExpanded: true,
+          hint: Text(hint, style: const TextStyle(color: _muted, fontSize: 11)),
+          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _gold),
+          style: const TextStyle(color: _navy, fontSize: 11),
+          dropdownColor: _paper,
+          borderRadius: BorderRadius.circular(12),
+          items: [
+            DropdownMenuItem<String>(
+              value: null,
+              child: Text('Todas $hint'.toLowerCase()),
+            ),
+            ...values.map((item) => DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(item, maxLines: 1, overflow: TextOverflow.ellipsis),
+                )),
+          ],
+          onChanged: onChanged,
+        ),
+      ),
     );
   }
 
