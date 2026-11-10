@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class LoanService {
-  static const String baseUrl = 'http://192.168.1.113:8000';
+  static const String baseUrl = 'https://bim-backend-os3d.onrender.com';
 
   Future<List<Map<String, dynamic>>> getMyLoans({
     required String token,
