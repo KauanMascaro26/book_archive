@@ -205,14 +205,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
               child: Container(
                 width: 190,
-                height: 260,
+                height: 230,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
@@ -280,7 +280,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 18),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -297,7 +297,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
               textAlign: TextAlign.center,
               style: const TextStyle(color: _muted, fontSize: 15),
             ),
-            const SizedBox(height: 17),
+            const SizedBox(height: 12),
             Center(
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -343,9 +343,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
               ),
             ),
             if (isAvailable) ...[
-              const SizedBox(height: 18),
+              const SizedBox(height: 12),
               SizedBox(
-                height: 50,
+                height: 48,
                 child: FilledButton.icon(
                   onPressed:
                       sendingRequest || requestSent ? null : _requestBook,
@@ -408,7 +408,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
               ),
             ],
-            const SizedBox(height: 28),
+            const SizedBox(height: 18),
             _sectionTitle('Sobre o livro'),
             const SizedBox(height: 10),
             Container(
@@ -429,16 +429,16 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 18),
             _sectionTitle('Informações do exemplar'),
-            const SizedBox(height: 11),
+            const SizedBox(height: 8),
             _metadataItem(
               icon: Icons.qr_code_rounded,
               label: 'Código do acervo',
               value: code,
             ),
             if (publisher.isNotEmpty) ...[
-              const SizedBox(height: 9),
+              const SizedBox(height: 7),
               _metadataItem(
                 icon: Icons.business_outlined,
                 label: 'Editora',
