@@ -116,7 +116,7 @@ class _CatalogPageState extends State<CatalogPage> {
                   children: [
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+                      padding: const EdgeInsets.fromLTRB(16, 11, 16, 12),
                       decoration: const BoxDecoration(
                         color: _navy,
                         borderRadius: BorderRadius.vertical(
@@ -130,19 +130,19 @@ class _CatalogPageState extends State<CatalogPage> {
                             'Encontre sua próxima leitura',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 19,
+                              fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 5),
+                          const SizedBox(height: 2),
                           Text(
                             'Pesquise por título, autor ou código do livro.',
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.76),
-                              fontSize: 12,
+                              fontSize: 10,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 9),
                           TextField(
                             onChanged: (value) =>
                                 setState(() => searchQuery = value),
@@ -165,8 +165,9 @@ class _CatalogPageState extends State<CatalogPage> {
                                     ),
                               filled: true,
                               fillColor: _paper,
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 13),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                              prefixIconConstraints: const BoxConstraints(minWidth: 42, minHeight: 40),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(13),
                                 borderSide: BorderSide.none,
@@ -188,7 +189,7 @@ class _CatalogPageState extends State<CatalogPage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                       child: Row(
                         children: [
                           const Text(
