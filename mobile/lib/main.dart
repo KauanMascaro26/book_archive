@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'app_theme.dart';
 import 'home_page.dart';
 import 'register_page.dart';
 import 'services/auth_service.dart';
 
-const Color bimNavy = Color(0xFF172B4D);
-const Color bimGold = Color(0xFFC6A15B);
-const Color bimCream = Color(0xFFF7F4ED);
-const Color bimField = Color(0xFFFBFAF7);
+const Color bimNavy = AppTheme.navy;
+const Color bimGold = AppTheme.gold;
+const Color bimCream = AppTheme.cream;
+const Color bimField = AppTheme.field;
 final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
@@ -23,17 +24,7 @@ class BookArchiveApp extends StatelessWidget {
       navigatorKey: appNavigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'BIM - Biblioteca dos Irmãos da Memphis',
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: bimCream,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: bimNavy,
-          primary: bimNavy,
-          secondary: bimGold,
-          surface: bimCream,
-        ),
-        fontFamily: 'Roboto',
-      ),
+      theme: AppTheme.light,
       home: const LoginPage(),
     );
   }
