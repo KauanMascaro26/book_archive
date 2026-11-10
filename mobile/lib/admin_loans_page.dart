@@ -23,6 +23,7 @@ class _AdminLoansPageState extends State<AdminLoansPage> {
   List<Map<String, dynamic>> _loans = [];
   String _selectedStatus = 'ALL';
   bool _loading = true;
+  int? _returningLoanId;
   String? _error;
 
   @override
@@ -114,6 +115,64 @@ class _AdminLoansPageState extends State<AdminLoansPage> {
   }
 
   void _applySearch() => setState(() {});
+
+  Future<void> _confirmReturn(Map<String, dynamic> loan) async {
+    final loanId = int.tryParse(loan['id'].toString());
+    if (loanId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Identificador do empréstimo inválido.')),
+      );
+      return;
+    }
+
+    final bookTitle = loan['book_title']?.toString() ?? 'este livro';
+    final userName = loan['user_name']?.toString() ?? 'este usuário';
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Registrar devolução?'),
+        content: Text('Confirma a devolução de "$bookTitle" por $userName? O livro ficará disponível no acervo.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: FilledButton.styleFrom(backgroundColor: _navy),
+            child: const Text('Confirmar devolução'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _returningLoanId = loanId);
+    try {
+      await _service.registerReturn(token: widget.token, loanId: loanId);
+      if (!mounted) return;
+      setState(() => _loans.removeWhere((item) => item['id'].toString() == loanId.toString()));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Devolução registrada. Livro disponível no acervo.'),
+          backgroundColor: Color(0xFF356B48),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: const Color(0xFF9B4840),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _returningLoanId = null);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -417,6 +476,33 @@ class _AdminLoansPageState extends State<AdminLoansPage> {
             _infoRow(Icons.assignment_turned_in_outlined, 'Data da devolução',
                 _formatDate(loan['return_date'])),
           ],
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _returningLoanId == int.tryParse(loan['id'].toString())
+                  ? null
+                  : () => _confirmReturn(loan),
+              icon: _returningLoanId == int.tryParse(loan['id'].toString())
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: _navy),
+                    )
+                  : const Icon(Icons.assignment_turned_in_outlined, size: 18),
+              label: Text(
+                _returningLoanId == int.tryParse(loan['id'].toString())
+                    ? 'Registrando...'
+                    : 'Registrar devolução',
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: _navy,
+                side: const BorderSide(color: _gold),
+                padding: const EdgeInsets.symmetric(vertical: 11),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
         ],
       ),
     );
