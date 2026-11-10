@@ -19,7 +19,6 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
   List<Map<String, dynamic>> _loans = [];
   bool _loading = true;
   String? _error;
-  String _filter = 'ALL';
 
   @override
   void initState() { super.initState(); _loadHistory(); }
@@ -36,10 +35,9 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
     }
   }
 
-  List<Map<String, dynamic>> get _filteredLoans {
-    if (_filter == 'ALL') return _loans;
-    return _loans.where((loan) => (loan['status']?.toString() ?? '').toUpperCase() == _filter).toList();
-  }
+  List<Map<String, dynamic>> get _filteredLoans => _loans
+      .where((loan) => (loan['status']?.toString() ?? '').toUpperCase() == 'RETURNED')
+      .toList();
 
   String _date(dynamic value) {
     if (value == null) return 'Não registrado';
@@ -70,8 +68,7 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final returned = _loans.where((loan) => loan['status'] == 'RETURNED').length;
-    final active = _loans.where((loan) => loan['status'] == 'ACTIVE').length;
-    final overdue = _loans.where((loan) => loan['status'] == 'OVERDUE').length;
+
     return Scaffold(
       backgroundColor: _cream,
       appBar: AppBar(
@@ -96,41 +93,26 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
                     decoration: BoxDecoration(color: _navy, borderRadius: BorderRadius.circular(16)),
                     child: const Row(children: [
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('Sua trajetória de leitura', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
+                        Text('Seus empréstimos concluídos', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
                         SizedBox(height: 5),
-                        Text('Consulte os livros que você já emprestou e acompanhe os atuais.', style: TextStyle(color: Color(0xFFD5DCE5), fontSize: 11, height: 1.4)),
+                        Text('Consulte os livros que você já devolveu e as datas de cada empréstimo.', style: TextStyle(color: Color(0xFFD5DCE5), fontSize: 11, height: 1.4)),
                       ])),
                       Icon(Icons.history_rounded, color: _gold, size: 35),
                     ]),
                   ),
                   const SizedBox(height: 12),
                   Row(children: [
-                    _summary('Total', _loans.length),
-                    const SizedBox(width: 8),
                     _summary('Devolvidos', returned),
-                    const SizedBox(width: 8),
-                    _summary('Ativos', active),
-                    const SizedBox(width: 8),
-                    _summary('Atrasados', overdue),
                   ]),
                   const SizedBox(height: 18),
-                  const Text('Filtrar por situação', style: TextStyle(color: _navy, fontSize: 14, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 9),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(children: [
-                      _filterChip('ALL', 'Todos'),
-                      _filterChip('RETURNED', 'Devolvidos'),
-                      _filterChip('ACTIVE', 'Em andamento'),
-                      _filterChip('OVERDUE', 'Atrasados'),
-                    ]),
-                  ),
                   const SizedBox(height: 15),
+                  const Text('Empréstimos devolvidos', style: TextStyle(color: _navy, fontSize: 14, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 10),
                   if (_filteredLoans.isEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 50),
                       child: _message(Icons.history_toggle_off_rounded, 'Nenhum registro encontrado',
-                        _filter == 'ALL' ? 'Seus empréstimos aparecerão aqui quando forem aprovados.' : 'Não há empréstimos nesta situação.'),
+                        'Quando você devolver um livro, o registro ficará disponível aqui.'),
                     )
                   else
                     for (final loan in _filteredLoans) ...[
@@ -154,21 +136,6 @@ class _LoanHistoryPageState extends State<LoanHistoryPage> {
       ]),
     ),
   );
-
-  Widget _filterChip(String value, String label) {
-    final selected = _filter == value;
-    return Padding(
-      padding: const EdgeInsets.only(right: 7),
-      child: ChoiceChip(
-        label: Text(label), selected: selected,
-        onSelected: (_) => setState(() => _filter = value),
-        selectedColor: _gold, backgroundColor: _paper,
-        labelStyle: TextStyle(color: selected ? _navy : _muted, fontSize: 11, fontWeight: FontWeight.w700),
-        side: BorderSide(color: selected ? _gold : const Color(0xFFE8E1D4)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-    );
-  }
 
   Widget _loanCard(Map<String, dynamic> loan) {
     final status = loan['status']?.toString() ?? 'UNKNOWN';
