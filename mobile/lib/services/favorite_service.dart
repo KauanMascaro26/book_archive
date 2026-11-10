@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class FavoriteService {
-  static const String baseUrl = 'http://192.168.1.113:8000';
+  static const String baseUrl = 'https://bim-backend-os3d.onrender.com';
   Map<String, String> _headers(String token) => {
     'Authorization': 'Bearer $token',
     'Content-Type': 'application/json',
