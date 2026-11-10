@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+
+import 'app_theme.dart';
 import 'services/loan_service.dart';
 import 'services/admin_loan_service.dart';
 
-const _navy = Color(0xFF172B4D);
-const _gold = Color(0xFFC6A15B);
-const _cream = Color(0xFFF7F4ED);
-const _paper = Color(0xFFFFFEFC);
-const _muted = Color(0xFF727B88);
+const _navy = AppTheme.navy;
+const _gold = AppTheme.gold;
+const _cream = AppTheme.cream;
+const _paper = AppTheme.paper;
+const _muted = AppTheme.muted;
 
 class LoanHistoryPage extends StatefulWidget {
   final String token;
