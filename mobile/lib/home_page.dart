@@ -430,7 +430,7 @@ class _HomePageState extends State<HomePage> {
     offset: const Offset(0, -18),
     child: ClipRRect(
       borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(50),
+        top: Radius.circular(30),
       ),
       child: Container(
         color: cardWhite,
