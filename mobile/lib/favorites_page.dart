@@ -75,7 +75,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 color: _gold, onRefresh: _loadFavorites,
                 child: ListView.separated(
                   padding: const EdgeInsets.all(16), itemCount: _books.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final book = _books[index];
                     final available = book['available'] == true;
