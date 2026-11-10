@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'services/book_request_service.dart';
+import 'services/favorite_service.dart';
 
 const _navy = Color(0xFF172B4D);
 const _gold = Color(0xFFC6A15B);
@@ -24,10 +25,61 @@ class BookDetailPage extends StatefulWidget {
 
 class _BookDetailPageState extends State<BookDetailPage> {
   final BookRequestService requestService = BookRequestService();
+  final FavoriteService favoriteService = FavoriteService();
+  bool isFavorite = false;
+  bool favoriteLoading = true;
+  bool updatingFavorite = false;
 
   bool sendingRequest = false;
   bool requestSent = false;
   String? requestMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoriteStatus();
+  }
+
+  Future<void> _loadFavoriteStatus() async {
+    try {
+      final favorites = await favoriteService.getFavorites(widget.token);
+      final bookId = (widget.book['id'] as num).toInt();
+      if (!mounted) return;
+      setState(() {
+        isFavorite = favorites.any((item) => (item['id'] as num).toInt() == bookId);
+        favoriteLoading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => favoriteLoading = false);
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    if (favoriteLoading || updatingFavorite) return;
+    setState(() => updatingFavorite = true);
+    try {
+      final bookId = (widget.book['id'] as num).toInt();
+      if (isFavorite) {
+        await favoriteService.removeFavorite(token: widget.token, bookId: bookId);
+      } else {
+        await favoriteService.addFavorite(token: widget.token, bookId: bookId);
+      }
+      if (!mounted) return;
+      setState(() {
+        isFavorite = !isFavorite;
+        updatingFavorite = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(isFavorite ? 'Adicionado aos favoritos.' : 'Removido dos favoritos.'),
+      ));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => updatingFavorite = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString().replaceFirst('Exception: ', '')),
+      ));
+    }
+  }
 
   Future<void> _requestBook() async {
     if (sendingRequest || requestSent) return;
@@ -132,6 +184,23 @@ class _BookDetailPageState extends State<BookDetailPage> {
           'Detalhes do livro',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+            onPressed: favoriteLoading || updatingFavorite ? null : _toggleFavorite,
+            icon: updatingFavorite
+                ? const SizedBox(
+                    width: 19,
+                    height: 19,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: _gold),
+                  )
+                : Icon(
+                    isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                    color: _gold,
+                  ),
+          ),
+          const SizedBox(width: 6),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
